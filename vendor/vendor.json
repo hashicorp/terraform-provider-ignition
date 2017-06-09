@@ -221,6 +221,18 @@
 			"revisionTime": "2014-04-22T17:41:19Z"
 		},
 		{
+			"checksumSHA1": "nux9tCYmTA5bOCVODF3Rqzcu60U=",
+			"path": "github.com/coreos/go-semver/semver",
+			"revision": "5e3acbb5668c4c3deb4842615c4098eb61fb6b1e",
+			"revisionTime": "2017-02-09T20:17:57Z"
+		},
+		{
+			"checksumSHA1": "IIyzaoW6Y8r+KPxTWVOKiA/GLvA=",
+			"path": "github.com/coreos/go-systemd/unit",
+			"revision": "24036eb3df68550d24a2736c5d013f4e83366866",
+			"revisionTime": "2017-06-09T14:46:27Z"
+		},
+		{
 			"checksumSHA1": "0sYnSIFxkXCVRYj3afRu8EyIl0g=",
 			"path": "github.com/coreos/ignition/config/types",
 			"revision": "211ab9d5a30be883c39a47642d05fdc6ce32b76e",
