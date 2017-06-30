@@ -19,7 +19,10 @@ data "ignition_file" "hello" {
 	filesystem = "foo"
 	path = "/hello.txt"
 	content {
-		content = "Hello World!"
+		content = "Hello $${world}"
+		vars {
+			world = "World!"
+		}
 	}
 }
 ```
@@ -52,18 +55,19 @@ The following arguments are supported:
 
 	__Note__: `content` and `source` are mutually exclusive
 
-* `mode` - (Optional) The list of partitions and their configuration for 
-this particular disk..
+* `mode` - (Optional) The list of partitions and their configuration for this particular disk.
 
 * `uid` - (Optional) The user ID of the owner.
 
 * `gid` - (Optional) The group ID of the owner.
 
 The `content` block supports:
- 
+
 * `mime` - (Required) MIME format of the content (default _text/plain_).
 
 * `content` - (Required) Content of the file.
+
+* `vars` - (Optional) Variables for interpolation within the content. Note that variables must all be primitives. Direct references to lists or maps will cause a validation error.
 
 The `source` block supports:
 
