@@ -29,7 +29,7 @@ The following arguments are supported:
 
 * `mask` - (Optional) Whether or not the service shall be masked. When true, the service is masked by symlinking it to _/dev/null_.
 
-* `content` - (Required) The contents of the unit. Optional when a dropin is provided.
+* `content` - (Optional) The contents of the unit.
 
 * `dropin` - (Optional) The list of drop-ins for the unit.
 
