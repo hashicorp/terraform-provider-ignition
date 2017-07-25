@@ -214,6 +214,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 	storage := types.Storage{}
 
 	for _, id := range d.Get("disks").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		d, ok := c.disks[id.(string)]
 		if !ok {
 			return storage, fmt.Errorf("invalid disk %q, unknown disk id", id)
@@ -223,6 +226,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 	}
 
 	for _, id := range d.Get("arrays").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		a, ok := c.arrays[id.(string)]
 		if !ok {
 			return storage, fmt.Errorf("invalid raid %q, unknown raid id", id)
@@ -232,6 +238,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 	}
 
 	for _, id := range d.Get("filesystems").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		f, ok := c.filesystems[id.(string)]
 		if !ok {
 			return storage, fmt.Errorf("invalid filesystem %q, unknown filesystem id", id)
@@ -241,6 +250,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 	}
 
 	for _, id := range d.Get("files").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		f, ok := c.files[id.(string)]
 		if !ok {
 			return storage, fmt.Errorf("invalid file %q, unknown file id", id)
@@ -257,6 +269,9 @@ func buildSystemd(d *schema.ResourceData, c *cache) (types.Systemd, error) {
 	systemd := types.Systemd{}
 
 	for _, id := range d.Get("systemd").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		u, ok := c.systemdUnits[id.(string)]
 		if !ok {
 			return systemd, fmt.Errorf("invalid systemd unit %q, unknown systemd unit id", id)
@@ -273,6 +288,9 @@ func buildNetworkd(d *schema.ResourceData, c *cache) (types.Networkd, error) {
 	networkd := types.Networkd{}
 
 	for _, id := range d.Get("networkd").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		u, ok := c.networkdUnits[id.(string)]
 		if !ok {
 			return networkd, fmt.Errorf("invalid networkd unit %q, unknown networkd unit id", id)
@@ -288,6 +306,9 @@ func buildPasswd(d *schema.ResourceData, c *cache) (types.Passwd, error) {
 	passwd := types.Passwd{}
 
 	for _, id := range d.Get("users").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		u, ok := c.users[id.(string)]
 		if !ok {
 			return passwd, fmt.Errorf("invalid user %q, unknown user id", id)
@@ -297,6 +318,9 @@ func buildPasswd(d *schema.ResourceData, c *cache) (types.Passwd, error) {
 	}
 
 	for _, id := range d.Get("groups").([]interface{}) {
+		if id == nil {
+			continue
+		}
 		g, ok := c.groups[id.(string)]
 		if !ok {
 			return passwd, fmt.Errorf("invalid group %q, unknown group id", id)
