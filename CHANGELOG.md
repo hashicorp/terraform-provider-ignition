@@ -1,4 +1,9 @@
 ## 0.1.1 (Unreleased)
+
+IMPROVEMENTS: 
+
+* Allow users to omit the optional verification hashes [GH-9]
+
 ## 0.1.0 (June 20, 2017)
 
 NOTES:
