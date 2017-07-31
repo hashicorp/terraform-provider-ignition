@@ -45,9 +45,9 @@ func TestIngnitionFileAppend(t *testing.T) {
 				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 			}
 
-		    append {
-		    	source = "foo"
-		    	verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+			append {
+				source = "foo"
+				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 			}
 		}
 	`, func(c *types.Config) error {
@@ -100,8 +100,8 @@ func TestIngnitionFileAppendNoVerification(t *testing.T) {
 				source = "foo"
 			}
 
-		    append {
-		    	source = "foo"
+			append {
+				source = "foo"
 			}
 		}
 	`, func(c *types.Config) error {
