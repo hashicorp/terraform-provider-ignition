@@ -30,15 +30,25 @@ func TestIngnitionFile(t *testing.T) {
 			}
 		}
 
+		data "ignition_file" "nop" {
+			filesystem = "nop"
+			path = "/nop"
+			source {
+				source = "nop"
+				compression = "gzip"
+			}
+		}
+
 		data "ignition_config" "test" {
 			files = [
 				"${data.ignition_file.foo.id}",
 				"${data.ignition_file.qux.id}",
+				"${data.ignition_file.nop.id}",
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Files) != 2 {
-			return fmt.Errorf("arrays, found %d", len(c.Storage.Arrays))
+		if len(c.Storage.Files) != 3 {
+			return fmt.Errorf("arrays, found %d", len(c.Storage.Files))
 		}
 
 		f := c.Storage.Files[0]
@@ -85,6 +95,27 @@ func TestIngnitionFile(t *testing.T) {
 
 		if f.Contents.Verification.Hash.Sum != "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
 			return fmt.Errorf("config.replace.verification, found %q", f.Contents.Verification.Hash)
+		}
+
+		f = c.Storage.Files[2]
+		if f.Filesystem != "nop" {
+			return fmt.Errorf("filesystem, found %q", f.Filesystem)
+		}
+
+		if f.Path != "/nop" {
+			return fmt.Errorf("path, found %q", f.Path)
+		}
+
+		if f.Contents.Source.String() != "nop" {
+			return fmt.Errorf("contents.source, found %q", f.Contents.Source)
+		}
+
+		if f.Contents.Compression != "gzip" {
+			return fmt.Errorf("contents.compression, found %q", f.Contents.Compression)
+		}
+
+		if f.Contents.Verification.Hash != nil {
+			return fmt.Errorf("contents.verification should be nil, found %q", f.Contents.Verification.Hash)
 		}
 
 		return nil
