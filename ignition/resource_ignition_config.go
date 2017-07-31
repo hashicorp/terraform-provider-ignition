@@ -198,12 +198,14 @@ func buildConfigReference(raw map[string]interface{}) (*types.ConfigReference, e
 
 	r.Source = src
 
-	hash, err := buildHash(raw["verification"].(string))
-	if err != nil {
-		return nil, err
-	}
+	if raw["verification"].(string) != "" {
+		hash, err := buildHash(raw["verification"].(string))
+		if err != nil {
+			return nil, err
+		}
 
-	r.Verification.Hash = &hash
+		r.Verification.Hash = &hash
+	}
 
 	return r, nil
 }

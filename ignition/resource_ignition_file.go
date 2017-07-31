@@ -142,12 +142,13 @@ func buildFile(d *schema.ResourceData, c *cache) (string, error) {
 		}
 
 		compression = types.Compression(d.Get("source.0.compression").(string))
-		h, err := buildHash(d.Get("source.0.verification").(string))
-		if err != nil {
-			return "", err
+		if v, ok := d.GetOk("source.0.verification"); ok {
+			h, err := buildHash(v.(string))
+			if err != nil {
+				return "", err
+			}
+			hash = &h
 		}
-
-		hash = &h
 	}
 
 	return c.addFile(&types.File{

@@ -45,9 +45,9 @@ func TestIngnitionFileAppend(t *testing.T) {
 				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 			}
 
-		    append {
-		    	source = "foo"
-		    	verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+			append {
+				source = "foo"
+				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 			}
 		}
 	`, func(c *types.Config) error {
@@ -62,6 +62,60 @@ func TestIngnitionFileAppend(t *testing.T) {
 
 		if a[0].Verification.Hash.Sum != "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
 			return fmt.Errorf("config.replace.verification, found %q", a[0].Verification.Hash)
+		}
+
+		return nil
+	})
+}
+
+func TestIngnitionFileReplaceNoVerification(t *testing.T) {
+	testIgnition(t, `
+		data "ignition_config" "test" {
+			replace {
+				source = "foo"
+			}
+		}
+	`, func(c *types.Config) error {
+		r := c.Ignition.Config.Replace
+		if r == nil {
+			return fmt.Errorf("unable to find replace config")
+		}
+
+		if r.Source.String() != "foo" {
+			return fmt.Errorf("config.replace.source, found %q", r.Source)
+		}
+
+		if r.Verification.Hash != nil {
+			return fmt.Errorf("verification hash should be nil")
+		}
+
+		return nil
+	})
+}
+
+func TestIngnitionFileAppendNoVerification(t *testing.T) {
+	testIgnition(t, `
+		data "ignition_config" "test" {
+			append {
+				source = "foo"
+			}
+
+			append {
+				source = "foo"
+			}
+		}
+	`, func(c *types.Config) error {
+		a := c.Ignition.Config.Append
+		if len(a) != 2 {
+			return fmt.Errorf("unable to find append config, expected 2")
+		}
+
+		if a[0].Source.String() != "foo" {
+			return fmt.Errorf("config.replace.source, found %q", a[0].Source)
+		}
+
+		if a[0].Verification.Hash != nil {
+			return fmt.Errorf("verification hash should be nil")
 		}
 
 		return nil
