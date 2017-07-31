@@ -68,6 +68,60 @@ func TestIngnitionFileAppend(t *testing.T) {
 	})
 }
 
+func TestIngnitionFileReplaceNoVerification(t *testing.T) {
+	testIgnition(t, `
+		data "ignition_config" "test" {
+			replace {
+				source = "foo"
+			}
+		}
+	`, func(c *types.Config) error {
+		r := c.Ignition.Config.Replace
+		if r == nil {
+			return fmt.Errorf("unable to find replace config")
+		}
+
+		if r.Source.String() != "foo" {
+			return fmt.Errorf("config.replace.source, found %q", r.Source)
+		}
+
+		if r.Verification.Hash != nil {
+			return fmt.Errorf("verification hash should be nil")
+		}
+
+		return nil
+	})
+}
+
+func TestIngnitionFileAppendNoVerification(t *testing.T) {
+	testIgnition(t, `
+		data "ignition_config" "test" {
+			append {
+				source = "foo"
+			}
+
+		    append {
+		    	source = "foo"
+			}
+		}
+	`, func(c *types.Config) error {
+		a := c.Ignition.Config.Append
+		if len(a) != 2 {
+			return fmt.Errorf("unable to find append config, expected 2")
+		}
+
+		if a[0].Source.String() != "foo" {
+			return fmt.Errorf("config.replace.source, found %q", a[0].Source)
+		}
+
+		if a[0].Verification.Hash != nil {
+			return fmt.Errorf("verification hash should be nil")
+		}
+
+		return nil
+	})
+}
+
 func testIgnitionError(t *testing.T, input string, expectedErr *regexp.Regexp) {
 	resource.Test(t, resource.TestCase{
 		IsUnitTest: true,
