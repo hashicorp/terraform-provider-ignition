@@ -20,20 +20,22 @@ import (
 	"github.com/coreos/ignition/config/validate/report"
 )
 
-type Disk struct {
-	Device     Path        `json:"device,omitempty"`
-	WipeTable  bool        `json:"wipeTable,omitempty"`
-	Partitions []Partition `json:"partitions,omitempty"`
+func (n Disk) Validate() report.Report {
+	return report.Report{}
 }
 
-func (n Disk) Validate() report.Report {
-	r := report.Report{}
+func (n Disk) ValidateDevice() report.Report {
 	if len(n.Device) == 0 {
-		r.Add(report.Entry{
-			Message: "disk device is required",
-			Kind:    report.EntryError,
-		})
+		return report.ReportFromError(fmt.Errorf("disk device is required"), report.EntryError)
 	}
+	if err := validatePath(string(n.Device)); err != nil {
+		return report.ReportFromError(err, report.EntryError)
+	}
+	return report.Report{}
+}
+
+func (n Disk) ValidatePartitions() report.Report {
+	r := report.Report{}
 	if n.partitionNumbersCollide() {
 		r.Add(report.Entry{
 			Message: fmt.Sprintf("disk %q: partition numbers collide", n.Device),
@@ -60,7 +62,10 @@ func (n Disk) Validate() report.Report {
 func (n Disk) partitionNumbersCollide() bool {
 	m := map[int][]Partition{}
 	for _, p := range n.Partitions {
-		m[p.Number] = append(m[p.Number], p)
+		if p.Number != 0 {
+			// a number of 0 means next available number, multiple devices can specify this
+			m[p.Number] = append(m[p.Number], p)
+		}
 	}
 	for _, n := range m {
 		if len(n) > 1 {
@@ -72,7 +77,7 @@ func (n Disk) partitionNumbersCollide() bool {
 }
 
 // end returns the last sector of a partition.
-func (p Partition) end() PartitionDimension {
+func (p Partition) end() int {
 	if p.Size == 0 {
 		// a size of 0 means "fill available", just return the start as the end for those.
 		return p.Start

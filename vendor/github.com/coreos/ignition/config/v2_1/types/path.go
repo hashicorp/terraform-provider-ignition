@@ -14,9 +14,18 @@
 
 package types
 
-type Group struct {
-	Name         string `json:"name,omitempty"`
-	Gid          *uint  `json:"gid,omitempty"`
-	PasswordHash string `json:"passwordHash,omitempty"`
-	System       bool   `json:"system,omitempty"`
+import (
+	"errors"
+	"path"
+)
+
+var (
+	ErrPathRelative = errors.New("path not absolute")
+)
+
+func validatePath(p string) error {
+	if !path.IsAbs(p) {
+		return ErrPathRelative
+	}
+	return nil
 }
