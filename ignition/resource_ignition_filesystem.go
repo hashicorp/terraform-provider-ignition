@@ -34,13 +34,18 @@ func resourceFilesystem() *schema.Resource {
 							Required: true,
 							ForceNew: true,
 						},
-						"create": &schema.Schema{
+						"wipe_filesystem": &schema.Schema{
 							Type:     schema.TypeBool,
 							Optional: true,
 							ForceNew: true,
 						},
-						"force": &schema.Schema{
-							Type:     schema.TypeBool,
+						"label": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"uuid": &schema.Schema{
+							Type:     schema.TypeString,
 							Optional: true,
 							ForceNew: true,
 						},
@@ -85,22 +90,26 @@ func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
 	var mount *types.Mount
 	if _, ok := d.GetOk("mount"); ok {
 		mount = &types.Mount{
-			Device: d.Get("mount.0.device").(string),
-			Format: d.Get("mount.0.format").(string),
+			Device:         d.Get("mount.0.device").(string),
+			Format:         d.Get("mount.0.format").(string),
+			WipeFilesystem: d.Get("mount.0.wipe_filesystem").(bool),
 		}
 
-		create, hasCreate := d.GetOk("mount.0.create")
-		force, hasForce := d.GetOk("mount.0.force")
+		label, hasLabel := d.GetOk("mount.0.label")
+		if hasLabel {
+			str := label.(string)
+			mount.Label = &str
+		}
+
+		uuid, hasUUID := d.GetOk("mount.0.uuid")
+		if hasUUID {
+			str := uuid.(string)
+			mount.UUID = &str
+		}
+
 		options, hasOptions := d.GetOk("mount.0.options")
-		if hasCreate || hasOptions || hasForce {
-			mount.Create = &types.Create{
-				Force:   force.(bool),
-				Options: castSliceInterfaceToCreateOption(options.([]interface{})),
-			}
-		}
-
-		if !create.(bool) && (hasForce || hasOptions) {
-			return "", fmt.Errorf("create should be true when force or options is used")
+		if hasOptions {
+			mount.Options = castSliceInterfaceToMountOption(options.([]interface{}))
 		}
 	}
 
@@ -121,14 +130,14 @@ func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
 	}), nil
 }
 
-func castSliceInterfaceToCreateOption(i []interface{}) []types.CreateOption {
-	var o []types.CreateOption
+func castSliceInterfaceToMountOption(i []interface{}) []types.MountOption {
+	var o []types.MountOption
 	for _, value := range i {
 		if value == nil {
 			continue
 		}
 
-		o = append(o, types.CreateOption(value.(string)))
+		o = append(o, types.MountOption(value.(string)))
 	}
 
 	return o

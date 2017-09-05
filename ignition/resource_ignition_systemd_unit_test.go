@@ -12,7 +12,7 @@ func TestIngnitionSystemdUnit(t *testing.T) {
 		data "ignition_systemd_unit" "foo" {
 			name = "foo.service"
 			content = "[Match]\nName=eth0\n\n[Network]\nAddress=10.0.1.7\n"
-			enable = false
+			enabled = true
 			mask = true
 
 			dropin {
@@ -45,8 +45,8 @@ func TestIngnitionSystemdUnit(t *testing.T) {
 			return fmt.Errorf("mask, found %t", u.Mask)
 		}
 
-		if u.Enable != false {
-			return fmt.Errorf("enable, found %t", u.Enable)
+		if *u.Enabled == false {
+			return fmt.Errorf("enabled, found %t", *u.Enabled)
 		}
 
 		if len(u.Dropins) != 1 {
@@ -100,7 +100,7 @@ func TestIgnitionSystemdUnit_emptyContent(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_systemd_unit" "foo" {
 			name = "foo.service"
-			enable = true
+			enabled = true
 		}
 
 		data "ignition_config" "test" {

@@ -1,8 +1,6 @@
 package ignition
 
 import (
-	"reflect"
-
 	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -74,6 +72,11 @@ func resourceUser() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"system": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
 		},
 	}
 }
@@ -98,26 +101,18 @@ func resourceUserExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 }
 
 func buildUser(d *schema.ResourceData, c *cache) (string, error) {
-	uc := types.Usercreate{
+	user := types.PasswdUser{
+		Name:         d.Get("name").(string),
 		UID:          getInt(d, "uid"),
 		Gecos:        d.Get("gecos").(string),
 		HomeDir:      d.Get("home_dir").(string),
 		NoCreateHome: d.Get("no_create_home").(bool),
 		PrimaryGroup: d.Get("primary_group").(string),
-		Groups:       castSliceInterfaceToUserCreateGroup(d.Get("groups").([]interface{})),
+		Groups:       castSliceInterfaceToPasswdUserGroup(d.Get("groups").([]interface{})),
 		NoUserGroup:  d.Get("no_user_group").(bool),
 		NoLogInit:    d.Get("no_log_init").(bool),
 		Shell:        d.Get("shell").(string),
-	}
-
-	puc := &uc
-	if reflect.DeepEqual(uc, types.Usercreate{}) { // check if the struct is empty
-		puc = nil
-	}
-
-	user := types.PasswdUser{
-		Create: puc,
-		Name:   d.Get("name").(string),
+		System:       d.Get("system").(bool),
 		SSHAuthorizedKeys: castSliceInterfaceToSSHAuthorizedKey(
 			d.Get("ssh_authorized_keys").([]interface{}),
 		),
@@ -131,14 +126,14 @@ func buildUser(d *schema.ResourceData, c *cache) (string, error) {
 	return c.addUser(&user), nil
 }
 
-func castSliceInterfaceToUserCreateGroup(i []interface{}) []types.UsercreateGroup {
-	var res []types.UsercreateGroup
+func castSliceInterfaceToPasswdUserGroup(i []interface{}) []types.PasswdUserGroup {
+	var res []types.PasswdUserGroup
 	for _, g := range i {
 		if g == nil {
 			continue
 		}
 
-		res = append(res, types.UsercreateGroup(g.(string)))
+		res = append(res, types.PasswdUserGroup(g.(string)))
 	}
 	return res
 }

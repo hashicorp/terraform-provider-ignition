@@ -23,6 +23,8 @@ var globalCache = &cache{
 	arrays:        make(map[string]*types.Raid, 0),
 	filesystems:   make(map[string]*types.Filesystem, 0),
 	files:         make(map[string]*types.File, 0),
+	directories:   make(map[string]*types.Directory, 0),
+	links:         make(map[string]*types.Link, 0),
 	systemdUnits:  make(map[string]*types.Unit, 0),
 	networkdUnits: make(map[string]*types.Networkdunit, 0),
 	users:         make(map[string]*types.PasswdUser, 0),
@@ -37,6 +39,8 @@ func Provider() terraform.ResourceProvider {
 			"ignition_raid":          resourceRaid(),
 			"ignition_filesystem":    resourceFilesystem(),
 			"ignition_file":          resourceFile(),
+			"ignition_directory":     resourceDirectory(),
+			"ignition_link":          resourceLink(),
 			"ignition_systemd_unit":  resourceSystemdUnit(),
 			"ignition_networkd_unit": resourceNetworkdUnit(),
 			"ignition_user":          resourceUser(),
@@ -88,6 +92,8 @@ type cache struct {
 	arrays        map[string]*types.Raid
 	filesystems   map[string]*types.Filesystem
 	files         map[string]*types.File
+	directories   map[string]*types.Directory
+	links         map[string]*types.Link
 	systemdUnits  map[string]*types.Unit
 	networkdUnits map[string]*types.Networkdunit
 	users         map[string]*types.PasswdUser
@@ -132,6 +138,26 @@ func (c *cache) addFile(f *types.File) string {
 
 	id := id(f)
 	c.files[id] = f
+
+	return id
+}
+
+func (c *cache) addDirectory(d *types.Directory) string {
+	c.Lock()
+	defer c.Unlock()
+
+	id := id(d)
+	c.directories[id] = d
+
+	return id
+}
+
+func (c *cache) addLink(l *types.Link) string {
+	c.Lock()
+	defer c.Unlock()
+
+	id := id(l)
+	c.links[id] = l
 
 	return id
 }

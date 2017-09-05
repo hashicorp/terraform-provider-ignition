@@ -49,6 +49,16 @@ func resourceConfig() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"directories": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"links": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"systemd": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -248,6 +258,30 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		}
 
 		storage.Files = append(storage.Files, *f)
+	}
+
+	for _, id := range d.Get("directories").([]interface{}) {
+		if id == nil {
+			continue
+		}
+		f, ok := c.directories[id.(string)]
+		if !ok {
+			return storage, fmt.Errorf("invalid file %q, unknown directory id", id)
+		}
+
+		storage.Directories = append(storage.Directories, *f)
+	}
+
+	for _, id := range d.Get("links").([]interface{}) {
+		if id == nil {
+			continue
+		}
+		f, ok := c.links[id.(string)]
+		if !ok {
+			return storage, fmt.Errorf("invalid file %q, unknown link id", id)
+		}
+
+		storage.Links = append(storage.Links, *f)
 	}
 
 	return storage, nil

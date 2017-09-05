@@ -15,7 +15,7 @@ func resourceSystemdUnit() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"enable": {
+			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
@@ -94,10 +94,12 @@ func buildSystemdUnit(d *schema.ResourceData, c *cache) (string, error) {
 		}
 	}
 
+	enabled := d.Get("enabled").(bool)
+
 	return c.addSystemdUnit(&types.Unit{
 		Name:     d.Get("name").(string),
 		Contents: d.Get("content").(string),
-		Enable:   d.Get("enable").(bool),
+		Enabled:  &enabled,
 		Mask:     d.Get("mask").(bool),
 		Dropins:  dropins,
 	}), nil

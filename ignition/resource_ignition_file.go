@@ -134,7 +134,6 @@ func buildFile(d *schema.ResourceData, c *cache) (string, error) {
 		if h != "" {
 			contents.Verification.Hash = &h
 		}
-
 	}
 
 	file := &types.File{}
