@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 )
 
 func TestIngnitionRaid(t *testing.T) {
@@ -22,11 +22,11 @@ func TestIngnitionRaid(t *testing.T) {
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Arrays) != 1 {
-			return fmt.Errorf("arrays, found %d", len(c.Storage.Arrays))
+		if len(c.Storage.Raid) != 1 {
+			return fmt.Errorf("arrays, found %d", len(c.Storage.Raid))
 		}
 
-		a := c.Storage.Arrays[0]
+		a := c.Storage.Raid[0]
 		if a.Name != "foo" {
 			return fmt.Errorf("name, found %q", a.Name)
 		}

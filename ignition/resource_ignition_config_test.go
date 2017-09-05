@@ -6,12 +6,12 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 )
 
-func TestIgnitionFileReplace(t *testing.T) {
+func TestIngnitionFileReplace(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_config" "test" {
 			replace {
@@ -25,19 +25,19 @@ func TestIgnitionFileReplace(t *testing.T) {
 			return fmt.Errorf("unable to find replace config")
 		}
 
-		if r.Source.String() != "foo" {
+		if r.Source != "foo" {
 			return fmt.Errorf("config.replace.source, found %q", r.Source)
 		}
 
-		if r.Verification.Hash.Sum != "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
-			return fmt.Errorf("config.replace.verification, found %q", r.Verification.Hash)
+		if *r.Verification.Hash != "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
+			return fmt.Errorf("config.replace.verification, found %q", *r.Verification.Hash)
 		}
 
 		return nil
 	})
 }
 
-func TestIgnitionFileAppend(t *testing.T) {
+func TestIngnitionFileAppend(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_config" "test" {
 			append {
@@ -45,9 +45,9 @@ func TestIgnitionFileAppend(t *testing.T) {
 				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 			}
 
-			append {
-				source = "foo"
-				verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+		    append {
+		    	source = "foo"
+		    	verification = "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 			}
 		}
 	`, func(c *types.Config) error {
@@ -56,12 +56,12 @@ func TestIgnitionFileAppend(t *testing.T) {
 			return fmt.Errorf("unable to find append config, expected 2")
 		}
 
-		if a[0].Source.String() != "foo" {
+		if a[0].Source != "foo" {
 			return fmt.Errorf("config.replace.source, found %q", a[0].Source)
 		}
 
-		if a[0].Verification.Hash.Sum != "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
-			return fmt.Errorf("config.replace.verification, found %q", a[0].Verification.Hash)
+		if *a[0].Verification.Hash != "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
+			return fmt.Errorf("config.replace.verification, found %q", *a[0].Verification.Hash)
 		}
 
 		return nil
@@ -81,7 +81,7 @@ func TestIngnitionFileReplaceNoVerification(t *testing.T) {
 			return fmt.Errorf("unable to find replace config")
 		}
 
-		if r.Source.String() != "foo" {
+		if r.Source != "foo" {
 			return fmt.Errorf("config.replace.source, found %q", r.Source)
 		}
 
@@ -110,7 +110,7 @@ func TestIngnitionFileAppendNoVerification(t *testing.T) {
 			return fmt.Errorf("unable to find append config, expected 2")
 		}
 
-		if a[0].Source.String() != "foo" {
+		if a[0].Source != "foo" {
 			return fmt.Errorf("config.replace.source, found %q", a[0].Source)
 		}
 
@@ -175,7 +175,7 @@ func TestIgnitionConfigArrays(t *testing.T) {
 		]
 	}
 	`, func(c *types.Config) error {
-		f := c.Storage.Arrays[0]
+		f := c.Storage.Raid[0]
 		if f.Name != "data" {
 			return fmt.Errorf("device, found %q", f.Name)
 		}

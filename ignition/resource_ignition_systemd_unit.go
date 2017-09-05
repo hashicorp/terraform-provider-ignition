@@ -1,7 +1,7 @@
 package ignition
 
 import (
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -74,7 +74,7 @@ func resourceSystemdUnitExists(d *schema.ResourceData, meta interface{}) (bool, 
 }
 
 func buildSystemdUnit(d *schema.ResourceData, c *cache) (string, error) {
-	var dropins []types.SystemdUnitDropIn
+	var dropins []types.Dropin
 	for _, raw := range d.Get("dropin").([]interface{}) {
 		value := raw.(map[string]interface{})
 
@@ -82,8 +82,8 @@ func buildSystemdUnit(d *schema.ResourceData, c *cache) (string, error) {
 			return "", err
 		}
 
-		dropins = append(dropins, types.SystemdUnitDropIn{
-			Name:     types.SystemdUnitDropInName(value["name"].(string)),
+		dropins = append(dropins, types.Dropin{
+			Name:     value["name"].(string),
 			Contents: value["content"].(string),
 		})
 	}
@@ -94,11 +94,11 @@ func buildSystemdUnit(d *schema.ResourceData, c *cache) (string, error) {
 		}
 	}
 
-	return c.addSystemdUnit(&types.SystemdUnit{
-		Name:     types.SystemdUnitName(d.Get("name").(string)),
+	return c.addSystemdUnit(&types.Unit{
+		Name:     d.Get("name").(string),
 		Contents: d.Get("content").(string),
 		Enable:   d.Get("enable").(bool),
 		Mask:     d.Get("mask").(bool),
-		DropIns:  dropins,
+		Dropins:  dropins,
 	}), nil
 }

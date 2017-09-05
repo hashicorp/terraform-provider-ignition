@@ -3,7 +3,7 @@ package ignition
 import (
 	"fmt"
 
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -82,20 +82,20 @@ func resourceFilesystemExists(d *schema.ResourceData, meta interface{}) (bool, e
 }
 
 func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
-	var mount *types.FilesystemMount
+	var mount *types.Mount
 	if _, ok := d.GetOk("mount"); ok {
-		mount = &types.FilesystemMount{
-			Device: types.Path(d.Get("mount.0.device").(string)),
-			Format: types.FilesystemFormat(d.Get("mount.0.format").(string)),
+		mount = &types.Mount{
+			Device: d.Get("mount.0.device").(string),
+			Format: d.Get("mount.0.format").(string),
 		}
 
 		create, hasCreate := d.GetOk("mount.0.create")
 		force, hasForce := d.GetOk("mount.0.force")
 		options, hasOptions := d.GetOk("mount.0.options")
 		if hasCreate || hasOptions || hasForce {
-			mount.Create = &types.FilesystemCreate{
+			mount.Create = &types.Create{
 				Force:   force.(bool),
-				Options: castSliceInterface(options.([]interface{})),
+				Options: castSliceInterfaceToCreateOption(options.([]interface{})),
 			}
 		}
 
@@ -104,10 +104,10 @@ func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
 		}
 	}
 
-	var path *types.Path
+	var path *string
 	if p, ok := d.GetOk("path"); ok {
-		tp := types.Path(p.(string))
-		path = &tp
+		str := p.(string)
+		path = &str
 	}
 
 	if mount != nil && path != nil {
@@ -119,4 +119,17 @@ func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
 		Mount: mount,
 		Path:  path,
 	}), nil
+}
+
+func castSliceInterfaceToCreateOption(i []interface{}) []types.CreateOption {
+	var o []types.CreateOption
+	for _, value := range i {
+		if value == nil {
+			continue
+		}
+
+		o = append(o, types.CreateOption(value.(string)))
+	}
+
+	return o
 }

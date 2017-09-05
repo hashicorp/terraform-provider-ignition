@@ -1,7 +1,7 @@
 package ignition
 
 import (
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -83,16 +83,16 @@ func buildDisk(d *schema.ResourceData, c *cache) (string, error) {
 		v := raw.(map[string]interface{})
 
 		partitions = append(partitions, types.Partition{
-			Label:    types.PartitionLabel(v["label"].(string)),
+			Label:    v["label"].(string),
 			Number:   v["number"].(int),
-			Size:     types.PartitionDimension(v["size"].(int)),
-			Start:    types.PartitionDimension(v["start"].(int)),
-			TypeGUID: types.PartitionTypeGUID(v["type_guid"].(string)),
+			Size:     v["size"].(int),
+			Start:    v["start"].(int),
+			TypeGUID: v["type_guid"].(string),
 		})
 	}
 
 	return c.addDisk(&types.Disk{
-		Device:     types.Path(d.Get("device").(string)),
+		Device:     d.Get("device").(string),
 		WipeTable:  d.Get("wipe_table").(bool),
 		Partitions: partitions,
 	}), nil

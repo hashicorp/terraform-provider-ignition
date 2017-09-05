@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 )
 
 func TestIngnitionUser(t *testing.T) {
@@ -45,8 +45,8 @@ func TestIngnitionUser(t *testing.T) {
 			return fmt.Errorf("Field Name didn't match. Expected: %s, Given: %s", "foo", u.Name)
 		}
 
-		if u.PasswordHash != "password" {
-			return fmt.Errorf("Field PasswordHash didn't match. Expected: %s, Given: %s", "password", u.PasswordHash)
+		if *u.PasswordHash != "password" {
+			return fmt.Errorf("Field PasswordHash didn't match. Expected: %s, Given: %s", "password", *u.PasswordHash)
 		}
 
 		if len(u.SSHAuthorizedKeys) != 1 {
@@ -57,16 +57,16 @@ func TestIngnitionUser(t *testing.T) {
 			return fmt.Errorf("Field SSHAuthorizedKeys didn't match. Expected: %s, Given: %s", "keys", u.SSHAuthorizedKeys[0])
 		}
 
-		if *u.Create.Uid != uint(42) {
-			return fmt.Errorf("Field Uid didn't match. Expected: %d, Given: %d", uint(42), u.Create.Uid)
+		if *u.Create.UID != 42 {
+			return fmt.Errorf("Field Uid didn't match. Expected: %d, Given: %d", uint(42), u.Create.UID)
 		}
 
-		if u.Create.GECOS != "gecos" {
-			return fmt.Errorf("Field GECOS didn't match. Expected: %s, Given: %s", "gecos", u.Create.GECOS)
+		if u.Create.Gecos != "gecos" {
+			return fmt.Errorf("Field GECOS didn't match. Expected: %s, Given: %s", "gecos", u.Create.Gecos)
 		}
 
-		if u.Create.Homedir != "home" {
-			return fmt.Errorf("Field Homedir didn't match. Expected: %s, Given: %s", "home", u.Create.Homedir)
+		if u.Create.HomeDir != "home" {
+			return fmt.Errorf("Field Homedir didn't match. Expected: %s, Given: %s", "home", u.Create.HomeDir)
 		}
 
 		if u.Create.NoCreateHome != true {
