@@ -6,11 +6,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"sync"
 
 	"github.com/coreos/go-systemd/unit"
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 )
@@ -24,10 +23,12 @@ var globalCache = &cache{
 	arrays:        make(map[string]*types.Raid, 0),
 	filesystems:   make(map[string]*types.Filesystem, 0),
 	files:         make(map[string]*types.File, 0),
-	systemdUnits:  make(map[string]*types.SystemdUnit, 0),
-	networkdUnits: make(map[string]*types.NetworkdUnit, 0),
-	users:         make(map[string]*types.User, 0),
-	groups:        make(map[string]*types.Group, 0),
+	directories:   make(map[string]*types.Directory, 0),
+	links:         make(map[string]*types.Link, 0),
+	systemdUnits:  make(map[string]*types.Unit, 0),
+	networkdUnits: make(map[string]*types.Networkdunit, 0),
+	users:         make(map[string]*types.PasswdUser, 0),
+	groups:        make(map[string]*types.PasswdGroup, 0),
 }
 
 func Provider() terraform.ResourceProvider {
@@ -38,6 +39,8 @@ func Provider() terraform.ResourceProvider {
 			"ignition_raid":          resourceRaid(),
 			"ignition_filesystem":    resourceFilesystem(),
 			"ignition_file":          resourceFile(),
+			"ignition_directory":     resourceDirectory(),
+			"ignition_link":          resourceLink(),
 			"ignition_systemd_unit":  resourceSystemdUnit(),
 			"ignition_networkd_unit": resourceNetworkdUnit(),
 			"ignition_user":          resourceUser(),
@@ -89,10 +92,12 @@ type cache struct {
 	arrays        map[string]*types.Raid
 	filesystems   map[string]*types.Filesystem
 	files         map[string]*types.File
-	systemdUnits  map[string]*types.SystemdUnit
-	networkdUnits map[string]*types.NetworkdUnit
-	users         map[string]*types.User
-	groups        map[string]*types.Group
+	directories   map[string]*types.Directory
+	links         map[string]*types.Link
+	systemdUnits  map[string]*types.Unit
+	networkdUnits map[string]*types.Networkdunit
+	users         map[string]*types.PasswdUser
+	groups        map[string]*types.PasswdGroup
 
 	sync.Mutex
 }
@@ -137,7 +142,27 @@ func (c *cache) addFile(f *types.File) string {
 	return id
 }
 
-func (c *cache) addSystemdUnit(u *types.SystemdUnit) string {
+func (c *cache) addDirectory(d *types.Directory) string {
+	c.Lock()
+	defer c.Unlock()
+
+	id := id(d)
+	c.directories[id] = d
+
+	return id
+}
+
+func (c *cache) addLink(l *types.Link) string {
+	c.Lock()
+	defer c.Unlock()
+
+	id := id(l)
+	c.links[id] = l
+
+	return id
+}
+
+func (c *cache) addSystemdUnit(u *types.Unit) string {
 	c.Lock()
 	defer c.Unlock()
 
@@ -147,7 +172,7 @@ func (c *cache) addSystemdUnit(u *types.SystemdUnit) string {
 	return id
 }
 
-func (c *cache) addNetworkdUnit(u *types.NetworkdUnit) string {
+func (c *cache) addNetworkdUnit(u *types.Networkdunit) string {
 	c.Lock()
 	defer c.Unlock()
 
@@ -157,7 +182,7 @@ func (c *cache) addNetworkdUnit(u *types.NetworkdUnit) string {
 	return id
 }
 
-func (c *cache) addUser(u *types.User) string {
+func (c *cache) addUser(u *types.PasswdUser) string {
 	c.Lock()
 	defer c.Unlock()
 
@@ -167,7 +192,7 @@ func (c *cache) addUser(u *types.User) string {
 	return id
 }
 
-func (c *cache) addGroup(g *types.Group) string {
+func (c *cache) addGroup(g *types.PasswdGroup) string {
 	c.Lock()
 	defer c.Unlock()
 
@@ -193,20 +218,21 @@ func castSliceInterface(i []interface{}) []string {
 		if value == nil {
 			continue
 		}
+
 		o = append(o, value.(string))
 	}
 
 	return o
 }
 
-func getUInt(d *schema.ResourceData, key string) *uint {
-	var uid *uint
+func getInt(d *schema.ResourceData, key string) *int {
+	var i *int
 	if value, ok := d.GetOk(key); ok {
-		u := uint(value.(int))
-		uid = &u
+		n := value.(int)
+		i = &n
 	}
 
-	return uid
+	return i
 }
 
 var errEmptyUnit = fmt.Errorf("invalid or empty unit content")
@@ -223,20 +249,4 @@ func validateUnitContent(content string) error {
 	}
 
 	return nil
-}
-
-func buildURL(raw string) (types.Url, error) {
-	u, err := url.Parse(raw)
-	if err != nil {
-		return types.Url{}, err
-	}
-
-	return types.Url(*u), nil
-}
-
-func buildHash(raw string) (types.Hash, error) {
-	h := types.Hash{}
-	err := h.UnmarshalJSON([]byte(fmt.Sprintf("%q", raw)))
-
-	return h, err
 }

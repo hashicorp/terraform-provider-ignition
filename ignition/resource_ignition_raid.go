@@ -1,7 +1,7 @@
 package ignition
 
 import (
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -55,9 +55,9 @@ func resourceRaidExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 }
 
 func buildRaid(d *schema.ResourceData, c *cache) (string, error) {
-	var devices []types.Path
+	var devices []types.Device
 	for _, value := range d.Get("devices").([]interface{}) {
-		devices = append(devices, types.Path(value.(string)))
+		devices = append(devices, types.Device(value.(string)))
 	}
 
 	return c.addRaid(&types.Raid{

@@ -3,7 +3,7 @@ package ignition
 import (
 	"fmt"
 
-	"github.com/coreos/ignition/config/types"
+	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -34,13 +34,18 @@ func resourceFilesystem() *schema.Resource {
 							Required: true,
 							ForceNew: true,
 						},
-						"create": &schema.Schema{
+						"wipe_filesystem": &schema.Schema{
 							Type:     schema.TypeBool,
 							Optional: true,
 							ForceNew: true,
 						},
-						"force": &schema.Schema{
-							Type:     schema.TypeBool,
+						"label": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"uuid": &schema.Schema{
+							Type:     schema.TypeString,
 							Optional: true,
 							ForceNew: true,
 						},
@@ -82,32 +87,36 @@ func resourceFilesystemExists(d *schema.ResourceData, meta interface{}) (bool, e
 }
 
 func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
-	var mount *types.FilesystemMount
+	var mount *types.Mount
 	if _, ok := d.GetOk("mount"); ok {
-		mount = &types.FilesystemMount{
-			Device: types.Path(d.Get("mount.0.device").(string)),
-			Format: types.FilesystemFormat(d.Get("mount.0.format").(string)),
+		mount = &types.Mount{
+			Device:         d.Get("mount.0.device").(string),
+			Format:         d.Get("mount.0.format").(string),
+			WipeFilesystem: d.Get("mount.0.wipe_filesystem").(bool),
 		}
 
-		create, hasCreate := d.GetOk("mount.0.create")
-		force, hasForce := d.GetOk("mount.0.force")
+		label, hasLabel := d.GetOk("mount.0.label")
+		if hasLabel {
+			str := label.(string)
+			mount.Label = &str
+		}
+
+		uuid, hasUUID := d.GetOk("mount.0.uuid")
+		if hasUUID {
+			str := uuid.(string)
+			mount.UUID = &str
+		}
+
 		options, hasOptions := d.GetOk("mount.0.options")
-		if hasCreate || hasOptions || hasForce {
-			mount.Create = &types.FilesystemCreate{
-				Force:   force.(bool),
-				Options: castSliceInterface(options.([]interface{})),
-			}
-		}
-
-		if !create.(bool) && (hasForce || hasOptions) {
-			return "", fmt.Errorf("create should be true when force or options is used")
+		if hasOptions {
+			mount.Options = castSliceInterfaceToMountOption(options.([]interface{}))
 		}
 	}
 
-	var path *types.Path
+	var path *string
 	if p, ok := d.GetOk("path"); ok {
-		tp := types.Path(p.(string))
-		path = &tp
+		str := p.(string)
+		path = &str
 	}
 
 	if mount != nil && path != nil {
@@ -119,4 +128,17 @@ func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
 		Mount: mount,
 		Path:  path,
 	}), nil
+}
+
+func castSliceInterfaceToMountOption(i []interface{}) []types.MountOption {
+	var o []types.MountOption
+	for _, value := range i {
+		if value == nil {
+			continue
+		}
+
+		o = append(o, types.MountOption(value.(string)))
+	}
+
+	return o
 }

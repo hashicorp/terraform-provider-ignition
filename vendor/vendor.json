@@ -239,10 +239,10 @@
 			"revisionTime": "2017-06-09T14:46:27Z"
 		},
 		{
-			"checksumSHA1": "0sYnSIFxkXCVRYj3afRu8EyIl0g=",
-			"path": "github.com/coreos/ignition/config/types",
-			"revision": "211ab9d5a30be883c39a47642d05fdc6ce32b76e",
-			"revisionTime": "2016-12-23T13:37:58Z"
+			"checksumSHA1": "KAInsmSFjCjBEJ+MQfPWgc9G3V8=",
+			"path": "github.com/coreos/ignition/config/v2_1/types",
+			"revision": "ea573e121f720294b1a2b5c9663591386246f3a2",
+			"revisionTime": "2017-09-04T17:14:45Z"
 		},
 		{
 			"checksumSHA1": "ViLVCc7CzzrGdJINAg8hv98CVkg=",
