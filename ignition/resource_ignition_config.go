@@ -173,6 +173,7 @@ func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
 	var err error
 
 	i := types.Ignition{}
+	i.Version = types.MaxVersion.String()
 
 	rr := d.Get("replace.0").(map[string]interface{})
 	if len(rr) != 0 {
