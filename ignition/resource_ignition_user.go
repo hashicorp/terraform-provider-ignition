@@ -123,7 +123,7 @@ func buildUser(d *schema.ResourceData, c *cache) (string, error) {
 		user.PasswordHash = &pwd
 	}
 
-	return c.addUser(&user), nil
+	return c.addUser(&user), handleReport(user.Validate())
 }
 
 func castSliceInterfaceToPasswdUserGroup(i []interface{}) []types.PasswdUserGroup {

@@ -2,6 +2,7 @@ package ignition
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -80,4 +81,44 @@ func TestIngnitionDiskResource(t *testing.T) {
 
 		return nil
 	})
+}
+
+func TestIngnitionDiskInvalidDevice(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_disk" "foo" {
+			device = "a"
+		}
+
+		data "ignition_config" "test" {
+			disks = [
+				"${data.ignition_disk.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("path not absolute"))
+}
+
+func TestIngnitionDiskInvalidPartition(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_disk" "foo" {
+			device = "/foo"
+			partition {
+				label = "qux"
+				size = 42
+				start = 2048
+				type_guid =  "01234567-89AB-CDEF-EDCB-A98765432101"
+			}
+			partition {
+				label = "bar"
+				size = 42
+				start = 2048
+				type_guid =  "01234567-89AB-CDEF-EDCB-A98765432101"
+			}
+		}
+
+		data "ignition_config" "test" {
+			disks = [
+				"${data.ignition_disk.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("overlap"))
 }

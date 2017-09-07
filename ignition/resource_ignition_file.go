@@ -138,9 +138,21 @@ func buildFile(d *schema.ResourceData, c *cache) (string, error) {
 
 	file := &types.File{}
 	file.Filesystem = d.Get("filesystem").(string)
+	if err := handleReport(file.ValidateFilesystem()); err != nil {
+		return "", err
+	}
+
 	file.Path = d.Get("path").(string)
+	if err := handleReport(file.ValidatePath()); err != nil {
+		return "", err
+	}
+
 	file.Contents = contents
+
 	file.Mode = d.Get("mode").(int)
+	if err := handleReport(file.ValidateMode()); err != nil {
+		return "", err
+	}
 
 	uid := d.Get("uid").(int)
 	if uid != 0 {

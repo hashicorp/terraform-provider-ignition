@@ -2,6 +2,7 @@ package ignition
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -55,4 +56,20 @@ func TestIngnitionLink(t *testing.T) {
 
 		return nil
 	})
+}
+
+func TestIngnitionLinkInvalidPath(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_link" "foo" {
+			filesystem = "foo"
+			path = "foo"
+			target = "bar"
+		}
+
+		data "ignition_config" "test" {
+			links = [
+				"${data.ignition_link.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("absolute"))
 }

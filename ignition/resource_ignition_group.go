@@ -49,9 +49,11 @@ func resourceGroupExists(d *schema.ResourceData, meta interface{}) (bool, error)
 }
 
 func buildGroup(d *schema.ResourceData, c *cache) (string, error) {
-	return c.addGroup(&types.PasswdGroup{
+	group := &types.PasswdGroup{
 		Name:         d.Get("name").(string),
 		PasswordHash: d.Get("password_hash").(string),
 		Gid:          getInt(d, "gid"),
-	}), nil
+	}
+
+	return c.addGroup(group), nil
 }
