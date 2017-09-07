@@ -2,6 +2,7 @@ package ignition
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -107,4 +108,38 @@ func TestIngnitionFilesystem(t *testing.T) {
 
 		return nil
 	})
+}
+
+func TestIngnitionFilesystemInvalidPath(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_filesystem" "foo" {
+			name = "foo"
+			path = "foo"
+		}
+
+		data "ignition_config" "test" {
+			filesystems = [
+				"${data.ignition_filesystem.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("absolute"))
+}
+
+func TestIngnitionFilesystemInvalidPathAndMount(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_filesystem" "foo" {
+			name = "foo"
+			path = "/foo"
+			mount {
+				device = "/qux"
+				format = "ext4"
+			}
+		}
+
+		data "ignition_config" "test" {
+			filesystems = [
+				"${data.ignition_filesystem.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("mount and path"))
 }

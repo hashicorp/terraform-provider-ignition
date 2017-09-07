@@ -1,8 +1,6 @@
 package ignition
 
 import (
-	"fmt"
-
 	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -87,47 +85,53 @@ func resourceFilesystemExists(d *schema.ResourceData, meta interface{}) (bool, e
 }
 
 func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
-	var mount *types.Mount
+	fs := &types.Filesystem{
+		Name: d.Get("name").(string),
+	}
+
 	if _, ok := d.GetOk("mount"); ok {
-		mount = &types.Mount{
+		fs.Mount = &types.Mount{
 			Device:         d.Get("mount.0.device").(string),
 			Format:         d.Get("mount.0.format").(string),
 			WipeFilesystem: d.Get("mount.0.wipe_filesystem").(bool),
 		}
 
+		if err := handleReport(fs.Mount.ValidateDevice()); err != nil {
+			return "", err
+		}
+
 		label, hasLabel := d.GetOk("mount.0.label")
 		if hasLabel {
 			str := label.(string)
-			mount.Label = &str
+			fs.Mount.Label = &str
+
+			if err := handleReport(fs.Mount.ValidateLabel()); err != nil {
+				return "", err
+			}
 		}
 
 		uuid, hasUUID := d.GetOk("mount.0.uuid")
 		if hasUUID {
 			str := uuid.(string)
-			mount.UUID = &str
+			fs.Mount.UUID = &str
 		}
 
 		options, hasOptions := d.GetOk("mount.0.options")
 		if hasOptions {
-			mount.Options = castSliceInterfaceToMountOption(options.([]interface{}))
+			fs.Mount.Options = castSliceInterfaceToMountOption(options.([]interface{}))
 		}
 	}
 
-	var path *string
 	if p, ok := d.GetOk("path"); ok {
-		str := p.(string)
-		path = &str
+		path := p.(string)
+		fs.Path = &path
+
+		if err := handleReport(fs.ValidatePath()); err != nil {
+			return "", err
+		}
 	}
 
-	if mount != nil && path != nil {
-		return "", fmt.Errorf("mount and path are mutually exclusive")
-	}
-
-	return c.addFilesystem(&types.Filesystem{
-		Name:  d.Get("name").(string),
-		Mount: mount,
-		Path:  path,
-	}), nil
+	return c.addFilesystem(fs), handleReport(fs.Validate())
 }
 
 func castSliceInterfaceToMountOption(i []interface{}) []types.MountOption {

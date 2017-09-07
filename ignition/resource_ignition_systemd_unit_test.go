@@ -2,6 +2,7 @@ package ignition
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -125,4 +126,35 @@ func TestIgnitionSystemdUnit_emptyContent(t *testing.T) {
 		}
 		return nil
 	})
+}
+
+func TestIngnitionSystemUnitInvalidName(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_systemd_unit" "foo" {
+			name = "foo"
+			enabled = true
+		}
+
+		data "ignition_config" "test" {
+			systemd = [
+				"${data.ignition_systemd_unit.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("invalid"))
+}
+
+func TestIngnitionSystemUnitInvalidContent(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_systemd_unit" "foo" {
+			name = "foo.service"
+			enabled = true
+			content = "[foo"
+		}
+
+		data "ignition_config" "test" {
+			systemd = [
+				"${data.ignition_systemd_unit.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("section"))
 }

@@ -2,6 +2,7 @@ package ignition
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -45,4 +46,38 @@ func TestIngnitionRaid(t *testing.T) {
 
 		return nil
 	})
+}
+
+func TestIngnitionRaidInvalidLevel(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_raid" "foo" {
+			name = "foo"
+			level = "foo"
+			devices = ["/foo"]
+			spares = 42
+		}
+
+		data "ignition_config" "test" {
+			arrays = [
+				"${data.ignition_raid.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("raid level"))
+}
+
+func TestIngnitionRaidInvalidDevices(t *testing.T) {
+	testIgnitionError(t, `
+		data "ignition_raid" "foo" {
+			name = "foo"
+			level = "raid10"
+			devices = ["foo"]
+			spares = 42
+		}
+
+		data "ignition_config" "test" {
+			arrays = [
+				"${data.ignition_raid.foo.id}",
+			]
+		}
+	`, regexp.MustCompile("absolute"))
 }

@@ -74,33 +74,36 @@ func resourceSystemdUnitExists(d *schema.ResourceData, meta interface{}) (bool, 
 }
 
 func buildSystemdUnit(d *schema.ResourceData, c *cache) (string, error) {
-	var dropins []types.Dropin
-	for _, raw := range d.Get("dropin").([]interface{}) {
-		value := raw.(map[string]interface{})
-
-		if err := validateUnitContent(value["content"].(string)); err != nil {
-			return "", err
-		}
-
-		dropins = append(dropins, types.Dropin{
-			Name:     value["name"].(string),
-			Contents: value["content"].(string),
-		})
-	}
-
-	if err := validateUnitContent(d.Get("content").(string)); err != nil {
-		if err != errEmptyUnit {
-			return "", err
-		}
-	}
-
 	enabled := d.Get("enabled").(bool)
-
-	return c.addSystemdUnit(&types.Unit{
+	unit := &types.Unit{
 		Name:     d.Get("name").(string),
 		Contents: d.Get("content").(string),
 		Enabled:  &enabled,
 		Mask:     d.Get("mask").(bool),
-		Dropins:  dropins,
-	}), nil
+	}
+
+	if err := handleReport(unit.ValidateName()); err != nil {
+		return "", err
+	}
+
+	if err := handleReport(unit.ValidateContents()); err != nil {
+		return "", err
+	}
+
+	for _, raw := range d.Get("dropin").([]interface{}) {
+		value := raw.(map[string]interface{})
+
+		d := types.Dropin{
+			Name:     value["name"].(string),
+			Contents: value["content"].(string),
+		}
+
+		if err := handleReport(d.Validate()); err != nil {
+			return "", err
+		}
+
+		unit.Dropins = append(unit.Dropins, d)
+	}
+
+	return c.addSystemdUnit(unit), nil
 }

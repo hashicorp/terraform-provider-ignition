@@ -49,12 +49,10 @@ func resourceNetworkdUnitExists(d *schema.ResourceData, meta interface{}) (bool,
 }
 
 func buildNetworkdUnit(d *schema.ResourceData, c *cache) (string, error) {
-	if err := validateUnitContent(d.Get("content").(string)); err != nil {
-		return "", err
-	}
-
-	return c.addNetworkdUnit(&types.Networkdunit{
+	unit := &types.Networkdunit{
 		Name:     d.Get("name").(string),
 		Contents: d.Get("content").(string),
-	}), nil
+	}
+
+	return c.addNetworkdUnit(unit), handleReport(unit.Validate())
 }

@@ -61,8 +61,19 @@ func resourceDirectoryExists(d *schema.ResourceData, meta interface{}) (bool, er
 func buildDirectory(d *schema.ResourceData, c *cache) (string, error) {
 	dir := &types.Directory{}
 	dir.Filesystem = d.Get("filesystem").(string)
+	if err := handleReport(dir.ValidateFilesystem()); err != nil {
+		return "", err
+	}
+
 	dir.Path = d.Get("path").(string)
+	if err := handleReport(dir.ValidatePath()); err != nil {
+		return "", err
+	}
+
 	dir.Mode = d.Get("mode").(int)
+	if err := handleReport(dir.ValidateMode()); err != nil {
+		return "", err
+	}
 
 	uid := d.Get("uid").(int)
 	if uid != 0 {

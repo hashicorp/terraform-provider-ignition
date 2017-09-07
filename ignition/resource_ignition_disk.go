@@ -78,22 +78,43 @@ func resourceDiskExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 }
 
 func buildDisk(d *schema.ResourceData, c *cache) (string, error) {
-	var partitions []types.Partition
+	disk := &types.Disk{
+		Device:    d.Get("device").(string),
+		WipeTable: d.Get("wipe_table").(bool),
+	}
+
+	if err := handleReport(disk.ValidateDevice()); err != nil {
+		return "", err
+	}
+
 	for _, raw := range d.Get("partition").([]interface{}) {
 		v := raw.(map[string]interface{})
-
-		partitions = append(partitions, types.Partition{
+		p := types.Partition{
 			Label:    v["label"].(string),
 			Number:   v["number"].(int),
 			Size:     v["size"].(int),
 			Start:    v["start"].(int),
 			TypeGUID: v["type_guid"].(string),
-		})
+		}
+
+		if err := handleReport(p.ValidateLabel()); err != nil {
+			return "", err
+		}
+
+		if err := handleReport(p.ValidateGUID()); err != nil {
+			return "", err
+		}
+
+		if err := handleReport(p.ValidateTypeGUID()); err != nil {
+			return "", err
+		}
+
+		disk.Partitions = append(disk.Partitions, p)
 	}
 
-	return c.addDisk(&types.Disk{
-		Device:     d.Get("device").(string),
-		WipeTable:  d.Get("wipe_table").(bool),
-		Partitions: partitions,
-	}), nil
+	if err := handleReport(disk.ValidatePartitions()); err != nil {
+		return "", err
+	}
+
+	return c.addDisk(disk), nil
 }

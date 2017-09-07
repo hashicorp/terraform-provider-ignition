@@ -1,15 +1,15 @@
 package ignition
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"log"
 	"sync"
 
-	"github.com/coreos/go-systemd/unit"
 	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/validate/report"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 )
@@ -235,18 +235,18 @@ func getInt(d *schema.ResourceData, key string) *int {
 	return i
 }
 
-var errEmptyUnit = fmt.Errorf("invalid or empty unit content")
-
-func validateUnitContent(content string) error {
-	c := bytes.NewBufferString(content)
-	unit, err := unit.Deserialize(c)
-	if err != nil {
-		return fmt.Errorf("invalid unit content: %s", err)
+func handleReport(r report.Report) error {
+	for _, e := range r.Entries {
+		debug(e.String())
 	}
 
-	if len(unit) == 0 {
-		return errEmptyUnit
+	if r.IsFatal() {
+		return fmt.Errorf("invalid configuration:\n%s", r.String())
 	}
 
 	return nil
+}
+
+func debug(format string, a ...interface{}) {
+	log.Printf("[DEBUG] %s", fmt.Sprintf(format, a...))
 }

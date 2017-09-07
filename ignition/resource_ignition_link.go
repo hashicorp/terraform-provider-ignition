@@ -27,7 +27,7 @@ func resourceLink() *schema.Resource {
 			},
 			"hard": &schema.Schema{
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"uid": &schema.Schema{
@@ -80,5 +80,5 @@ func buildLink(d *schema.ResourceData, c *cache) (string, error) {
 		link.Group = types.NodeGroup{ID: &gid}
 	}
 
-	return c.addLink(link), nil
+	return c.addLink(link), handleReport(link.Validate())
 }
