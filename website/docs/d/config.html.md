@@ -32,6 +32,10 @@ The following arguments are supported:
 
 * `files` - (Optional) The list of files, rooted in this particular filesystem, to be written.
 
+* `directories` - (Optional) The list of directories to be created.
+
+* `links` - (Optional) The list of links to be created.
+
 * `systemd` - (Optional) The list of systemd units. Describes the desired state of the systemd units.
 
 * `networkd` - (Optional) The list of networkd units. Describes the desired state of the networkd files.
