@@ -28,9 +28,13 @@ The following arguments are supported:
 
 * `arrays` - (Optional) The list of RAID arrays to be configured.
 
-* `filesystems` - (Optional) The list of filesystems to be configured and/or used in the _ignition_file_ resource.
+* `filesystems` - (Optional) The list of filesystems to be configured and/or used in the `ignition_file`, `ignition_directory`, and `ignition_link` resources.
 
-* `files` - (Optional) The list of files, rooted in this particular filesystem, to be written.
+* `files` - (Optional) The list of files to be written.
+
+* `directories` - (Optional) The list of directories to be created.
+
+* `links` - (Optional) The list of links to be created.
 
 * `systemd` - (Optional) The list of systemd units. Describes the desired state of the systemd units.
 
