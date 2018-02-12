@@ -51,7 +51,7 @@ The following arguments are supported:
 
 The `append` and `replace` blocks supports:
 
-* `source` - (Required) The URL of the config. Supported schemes are http. Note: When using http, it is advisable to use the verification option to ensure the contents haven’t been modified.
+* `source` - (Required) The URL of the config. Supported schemes are http, https, tftp, s3, and data. When using http, it is advisable to use the verification option to ensure the contents haven't been modified.
 
 * `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is sha512.
 
