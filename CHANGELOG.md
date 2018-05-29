@@ -1,8 +1,8 @@
-## 1.0.1 (Unreleased)
+## 1.0.1 (May 29, 2018)
 NOTES:
 
-- [GH-13] introduced a regression with rendered configuration for the
-  `ignition_config` resource, and was released in version 1.0.0. [GH-23]
+- [[#13](https://github.com/terraform-providers/terraform-provider-ignition/issues/13)] introduced a regression with rendered configuration for the
+  `ignition_config` resource, and was released in version 1.0.0. ([#23](https://github.com/terraform-providers/terraform-provider-ignition/issues/23))
   restores the correct behavior. As a result, the rendered output of
   `ignition_config` may change when upgrading to this version
 
