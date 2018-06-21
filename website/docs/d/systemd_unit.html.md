@@ -23,7 +23,7 @@ data "ignition_systemd_unit" "example" {
 
 The following arguments are supported:
 
-* `name` - (Required) Tthe name of the unit. This must be suffixed with a valid unit type (e.g. _thing.service_).
+* `name` - (Required) The name of the unit. This must be suffixed with a valid unit type (e.g. _thing.service_).
 
 * `enabled` - (Optional) Whether or not the service shall be enabled. When true, the service is enabled. In order for this to have any effect, the unit must have an install section. (default true)
 
