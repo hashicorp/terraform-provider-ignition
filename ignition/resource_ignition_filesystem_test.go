@@ -57,7 +57,7 @@ func TestIngnitionFilesystem(t *testing.T) {
 		}
 
 		if string(*f.Path) != "/foo" {
-			return fmt.Errorf("path, found %q", f.Path)
+			return fmt.Errorf("path, found %q", *f.Path)
 		}
 
 		f = c.Storage.Filesystems[1]
