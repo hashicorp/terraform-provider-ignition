@@ -116,7 +116,7 @@ func TestIngnitionFile(t *testing.T) {
 		}
 
 		if f.Contents.Verification.Hash != nil {
-			return fmt.Errorf("contents.verification should be nil, found %q", f.Contents.Verification.Hash)
+			return fmt.Errorf("contents.verification should be nil, found %q", *f.Contents.Verification.Hash)
 		}
 
 		return nil
