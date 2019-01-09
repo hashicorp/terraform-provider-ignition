@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceLink() *schema.Resource {
+func dataSourceLink() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceLinkExists,
 		Read:   resourceLinkRead,

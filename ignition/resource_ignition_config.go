@@ -24,7 +24,7 @@ var configReferenceResource = &schema.Resource{
 	},
 }
 
-func resourceConfig() *schema.Resource {
+func dataSourceConfig() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceIgnitionFileExists,
 		Read:   resourceIgnitionFileRead,

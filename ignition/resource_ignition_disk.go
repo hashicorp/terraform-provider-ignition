@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceDisk() *schema.Resource {
+func dataSourceDisk() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceDiskExists,
 		Read:   resourceDiskRead,
