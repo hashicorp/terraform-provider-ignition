@@ -138,10 +138,8 @@ func TestIgnitionConfigDisks(t *testing.T) {
 	 }
 
 	data "ignition_config" "test" {
-		disks = [
-			"${data.ignition_disk.test.id}",
-			"${var.ignition_disk_ids}",
-		]
+		disks = concat([data.ignition_disk.test.id],
+			var.ignition_disk_ids)
 	}
 	`, func(c *types.Config) error {
 		f := c.Storage.Disks[0]
@@ -169,10 +167,8 @@ func TestIgnitionConfigArrays(t *testing.T) {
 	}
 
 	data "ignition_config" "test" {
-		arrays = [
-			"${data.ignition_raid.md.id}",
-			"${var.ignition_array_ids}"
-		]
+		arrays = concat([data.ignition_raid.md.id],
+			var.ignition_array_ids)
 	}
 	`, func(c *types.Config) error {
 		f := c.Storage.Raid[0]
@@ -192,17 +188,17 @@ func TestIgnitionConfigFilesystems(t *testing.T) {
 
 	data "ignition_filesystem" "test" {
 		name = "test"
-		mount = {
+		mount {
 			device = "/dev/sda"
 			format = "ext4"
 	 	}
 	 }
 
 	data "ignition_config" "test" {
-		filesystems = [
-			"${data.ignition_filesystem.test.id}",
-			"${var.ignition_filesystem_ids}",
-		]
+		filesystems = concat(
+			[data.ignition_filesystem.test.id],
+			var.ignition_filesystem_ids
+		)
 	}
 	`, func(c *types.Config) error {
 		f := c.Storage.Filesystems[0]
@@ -229,10 +225,10 @@ func TestIgnitionConfigFiles(t *testing.T) {
 	 }
 
 	data "ignition_config" "test" {
-		files = [
-			"${data.ignition_file.test.id}",
-			"${var.ignition_file_ids}",
-		]
+		files = concat(
+			[data.ignition_file.test.id],
+			var.ignition_file_ids,
+		)
 	}
 	`, func(c *types.Config) error {
 		f := c.Storage.Files[0]
@@ -256,10 +252,10 @@ func TestIgnitionConfigSystemd(t *testing.T) {
 	}
 
 	data "ignition_config" "test" {
-		systemd = [
-			"${data.ignition_systemd_unit.test.id}",
-			"${var.ignition_systemd_ids}",
-		]
+		systemd = concat(
+			[data.ignition_systemd_unit.test.id],
+			var.ignition_systemd_ids,
+		)
 	}
 	`, func(c *types.Config) error {
 		f := c.Systemd.Units[0]
@@ -283,10 +279,10 @@ func TestIgnitionConfigNetworkd(t *testing.T) {
 	}
 
 	data "ignition_config" "test" {
-		networkd = [
-			"${data.ignition_networkd_unit.test.id}",
-			"${var.ignition_networkd_ids}",
-		]
+		networkd = concat(
+			[data.ignition_networkd_unit.test.id],
+			var.ignition_networkd_ids
+			)
 	}
 	`, func(c *types.Config) error {
 		f := c.Networkd.Units[0]
@@ -311,10 +307,10 @@ func TestIgnitionConfigUsers(t *testing.T) {
 	}
 
 	data "ignition_config" "test" {
-		users = [
-			"${data.ignition_user.test.id}",
-			"${var.ignition_user_ids}",
-		]
+		users = concat(
+			[data.ignition_user.test.id],
+			var.ignition_user_ids
+		)
 	}
 	`, func(c *types.Config) error {
 		f := c.Passwd.Users[0]
@@ -337,10 +333,10 @@ func TestIgnitionConfigGroupss(t *testing.T) {
 	}
 
 	data "ignition_config" "test" {
-		groups = [
-			"${data.ignition_group.test.id}",
-			"${var.ignition_group_ids}",
-		]
+		groups = concat(
+			[data.ignition_group.test.id],
+			var.ignition_group_ids
+		)
 	}
 	`, func(c *types.Config) error {
 		f := c.Passwd.Groups[0]
