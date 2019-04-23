@@ -34,17 +34,17 @@ var globalCache = &cache{
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"ignition_config":        resourceConfig(),
-			"ignition_disk":          resourceDisk(),
-			"ignition_raid":          resourceRaid(),
-			"ignition_filesystem":    resourceFilesystem(),
-			"ignition_file":          resourceFile(),
-			"ignition_directory":     resourceDirectory(),
-			"ignition_link":          resourceLink(),
-			"ignition_systemd_unit":  resourceSystemdUnit(),
-			"ignition_networkd_unit": resourceNetworkdUnit(),
-			"ignition_user":          resourceUser(),
-			"ignition_group":         resourceGroup(),
+			"ignition_config":        dataSourceConfig(),
+			"ignition_disk":          dataSourceDisk(),
+			"ignition_raid":          dataSourceRaid(),
+			"ignition_filesystem":    dataSourceFilesystem(),
+			"ignition_file":          dataSourceFile(),
+			"ignition_directory":     dataSourceDirectory(),
+			"ignition_link":          dataSourceLink(),
+			"ignition_systemd_unit":  dataSourceSystemdUnit(),
+			"ignition_networkd_unit": dataSourceNetworkdUnit(),
+			"ignition_user":          dataSourceUser(),
+			"ignition_group":         dataSourceGroup(),
 		},
 	}
 }

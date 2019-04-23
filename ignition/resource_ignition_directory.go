@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceDirectory() *schema.Resource {
+func dataSourceDirectory() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceDirectoryExists,
 		Read:   resourceDirectoryRead,

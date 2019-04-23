@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceGroup() *schema.Resource {
+func dataSourceGroup() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceGroupExists,
 		Read:   resourceGroupRead,

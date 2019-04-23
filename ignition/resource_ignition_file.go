@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceFile() *schema.Resource {
+func dataSourceFile() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceFileExists,
 		Read:   resourceFileRead,

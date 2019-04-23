@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceRaid() *schema.Resource {
+func dataSourceRaid() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceRaidExists,
 		Read:   resourceRaidRead,

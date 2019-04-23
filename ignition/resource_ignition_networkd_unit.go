@@ -5,7 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func resourceNetworkdUnit() *schema.Resource {
+func dataSourceNetworkdUnit() *schema.Resource {
 	return &schema.Resource{
 		Exists: resourceNetworkdUnitExists,
 		Read:   resourceNetworkdUnitRead,
