@@ -217,9 +217,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		if id == nil {
 			continue
 		}
-		d, ok := c.disks[id.(string)]
-		if !ok {
-			return storage, fmt.Errorf("invalid disk %q, unknown disk id", id)
+		d, err := c.getDisk(id.(string))
+		if err != nil {
+			return storage, fmt.Errorf("invalid disk %q, failed to get disk id: %v", id, err)
 		}
 
 		storage.Disks = append(storage.Disks, *d)
@@ -229,9 +229,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		if id == nil {
 			continue
 		}
-		a, ok := c.arrays[id.(string)]
-		if !ok {
-			return storage, fmt.Errorf("invalid raid %q, unknown raid id", id)
+		a, err := c.getRaid(id.(string))
+		if err != nil {
+			return storage, fmt.Errorf("invalid raid %q, failed to get disk id: %v", id, err)
 		}
 
 		storage.Raid = append(storage.Raid, *a)
@@ -241,9 +241,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		if id == nil {
 			continue
 		}
-		f, ok := c.filesystems[id.(string)]
-		if !ok {
-			return storage, fmt.Errorf("invalid filesystem %q, unknown filesystem id", id)
+		f, err := c.getFilesystem(id.(string))
+		if err != nil {
+			return storage, fmt.Errorf("invalid filesystem %q, failed to get filesystem id: %v", id, err)
 		}
 
 		storage.Filesystems = append(storage.Filesystems, *f)
@@ -253,9 +253,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		if id == nil {
 			continue
 		}
-		f, ok := c.files[id.(string)]
-		if !ok {
-			return storage, fmt.Errorf("invalid file %q, unknown file id", id)
+		f, err := c.getFile(id.(string))
+		if err != nil {
+			return storage, fmt.Errorf("invalid file %q, failed to get file id: %v", id, err)
 		}
 
 		storage.Files = append(storage.Files, *f)
@@ -265,9 +265,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		if id == nil {
 			continue
 		}
-		f, ok := c.directories[id.(string)]
-		if !ok {
-			return storage, fmt.Errorf("invalid file %q, unknown directory id", id)
+		f, err := c.getDirectory(id.(string))
+		if err != nil {
+			return storage, fmt.Errorf("invalid file %q, failed to get directory id: %v", id, err)
 		}
 
 		storage.Directories = append(storage.Directories, *f)
@@ -277,9 +277,9 @@ func buildStorage(d *schema.ResourceData, c *cache) (types.Storage, error) {
 		if id == nil {
 			continue
 		}
-		f, ok := c.links[id.(string)]
-		if !ok {
-			return storage, fmt.Errorf("invalid file %q, unknown link id", id)
+		f, err := c.getLink(id.(string))
+		if err != nil {
+			return storage, fmt.Errorf("invalid file %q, failed to get link id: %v", id, err)
 		}
 
 		storage.Links = append(storage.Links, *f)
@@ -297,9 +297,9 @@ func buildSystemd(d *schema.ResourceData, c *cache) (types.Systemd, error) {
 			continue
 		}
 
-		u, ok := c.systemdUnits[id.(string)]
-		if !ok {
-			return systemd, fmt.Errorf("invalid systemd unit %q, unknown systemd unit id", id)
+		u, err := c.getSystemdUnit(id.(string))
+		if err != nil {
+			return systemd, fmt.Errorf("invalid systemd unit %q, failed to get systemd unit id: %v", id, err)
 		}
 
 		systemd.Units = append(systemd.Units, *u)
@@ -317,9 +317,9 @@ func buildNetworkd(d *schema.ResourceData, c *cache) (types.Networkd, error) {
 			continue
 		}
 
-		u, ok := c.networkdUnits[id.(string)]
-		if !ok {
-			return networkd, fmt.Errorf("invalid networkd unit %q, unknown networkd unit id", id)
+		u, err := c.getNetworkdunit(id.(string))
+		if err != nil {
+			return networkd, fmt.Errorf("invalid networkd unit %q, failed to get networkd unit id: %v", id, err)
 		}
 
 		networkd.Units = append(networkd.Units, *u)
@@ -336,9 +336,9 @@ func buildPasswd(d *schema.ResourceData, c *cache) (types.Passwd, error) {
 			continue
 		}
 
-		u, ok := c.users[id.(string)]
-		if !ok {
-			return passwd, fmt.Errorf("invalid user %q, unknown user id", id)
+		u, err := c.getUser(id.(string))
+		if err != nil {
+			return passwd, fmt.Errorf("invalid user %q, failed to get user id: %v", id, err)
 		}
 
 		passwd.Users = append(passwd.Users, *u)
@@ -349,9 +349,9 @@ func buildPasswd(d *schema.ResourceData, c *cache) (types.Passwd, error) {
 			continue
 		}
 
-		g, ok := c.groups[id.(string)]
-		if !ok {
-			return passwd, fmt.Errorf("invalid group %q, unknown group id", id)
+		g, err := c.getGroup(id.(string))
+		if err != nil {
+			return passwd, fmt.Errorf("invalid group %q, failed to get group id: %v", id, err)
 		}
 
 		passwd.Groups = append(passwd.Groups, *g)
