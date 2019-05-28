@@ -1,4 +1,17 @@
-## 1.0.2 (Unreleased)
+## 1.1.0 (Unreleased)
+
+IMPROVEMENTS:
+
+* Updated directory mode to take both octal and decimal.
+* Adapt to Go 1.11+ and enable modules
+* Bump Terraform SDK to v0.12.0 and tidy up modules
+
+BUG FIXES:
+
+* Typo on ignition_systemd_unit docs
+* Fix typos in README.md
+* Rename resourceX to dataSourceX to reflect reality (only datasources present).
+
 ## 1.0.1 (May 29, 2018)
 NOTES:
 
