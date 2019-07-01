@@ -1,6 +1,8 @@
 package ignition
 
 import (
+	"encoding/json"
+
 	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -51,6 +53,10 @@ func dataSourceDisk() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
+						"rendered": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -59,7 +65,7 @@ func dataSourceDisk() *schema.Resource {
 }
 
 func resourceDiskRead(d *schema.ResourceData, meta interface{}) error {
-	id, err := buildDisk(d, globalCache)
+	id, err := buildDisk(d)
 	if err != nil {
 		return err
 	}
@@ -69,7 +75,7 @@ func resourceDiskRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceDiskExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	id, err := buildDisk(d, globalCache)
+	id, err := buildDisk(d)
 	if err != nil {
 		return false, err
 	}
@@ -77,7 +83,7 @@ func resourceDiskExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 	return id == d.Id(), nil
 }
 
-func buildDisk(d *schema.ResourceData, c *cache) (string, error) {
+func buildDisk(d *schema.ResourceData) (string, error) {
 	disk := &types.Disk{
 		Device:    d.Get("device").(string),
 		WipeTable: d.Get("wipe_table").(bool),
@@ -116,5 +122,11 @@ func buildDisk(d *schema.ResourceData, c *cache) (string, error) {
 		return "", err
 	}
 
-	return c.addDisk(disk), nil
+	b, err := json.Marshal(disk)
+	if err != nil {
+		return "", err
+	}
+	d.Set("rendered", string(b))
+
+	return hash(string(b)), nil
 }

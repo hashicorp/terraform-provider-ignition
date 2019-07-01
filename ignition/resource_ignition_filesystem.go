@@ -1,6 +1,8 @@
 package ignition
 
 import (
+	"encoding/json"
+
 	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -61,12 +63,16 @@ func dataSourceFilesystem() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"rendered": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
 func resourceFilesystemRead(d *schema.ResourceData, meta interface{}) error {
-	id, err := buildFilesystem(d, globalCache)
+	id, err := buildFilesystem(d)
 	if err != nil {
 		return err
 	}
@@ -76,7 +82,7 @@ func resourceFilesystemRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceFilesystemExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	id, err := buildFilesystem(d, globalCache)
+	id, err := buildFilesystem(d)
 	if err != nil {
 		return false, err
 	}
@@ -84,7 +90,7 @@ func resourceFilesystemExists(d *schema.ResourceData, meta interface{}) (bool, e
 	return id == d.Id(), nil
 }
 
-func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
+func buildFilesystem(d *schema.ResourceData) (string, error) {
 	fs := &types.Filesystem{
 		Name: d.Get("name").(string),
 	}
@@ -131,7 +137,13 @@ func buildFilesystem(d *schema.ResourceData, c *cache) (string, error) {
 		}
 	}
 
-	return c.addFilesystem(fs), handleReport(fs.Validate())
+	b, err := json.Marshal(fs)
+	if err != nil {
+		return "", err
+	}
+	d.Set("rendered", string(b))
+
+	return hash(string(b)), handleReport(fs.Validate())
 }
 
 func castSliceInterfaceToMountOption(i []interface{}) []types.MountOption {

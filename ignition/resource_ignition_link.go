@@ -1,6 +1,8 @@
 package ignition
 
 import (
+	"encoding/json"
+
 	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -40,12 +42,16 @@ func dataSourceLink() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"rendered": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
 func resourceLinkRead(d *schema.ResourceData, meta interface{}) error {
-	id, err := buildLink(d, globalCache)
+	id, err := buildLink(d)
 	if err != nil {
 		return err
 	}
@@ -55,7 +61,7 @@ func resourceLinkRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceLinkExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	id, err := buildLink(d, globalCache)
+	id, err := buildLink(d)
 	if err != nil {
 		return false, err
 	}
@@ -63,7 +69,7 @@ func resourceLinkExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 	return id == d.Id(), nil
 }
 
-func buildLink(d *schema.ResourceData, c *cache) (string, error) {
+func buildLink(d *schema.ResourceData) (string, error) {
 	link := &types.Link{}
 	link.Filesystem = d.Get("filesystem").(string)
 	link.Path = d.Get("path").(string)
@@ -80,5 +86,11 @@ func buildLink(d *schema.ResourceData, c *cache) (string, error) {
 		link.Group = types.NodeGroup{ID: &gid}
 	}
 
-	return c.addLink(link), handleReport(link.Validate())
+	b, err := json.Marshal(link)
+	if err != nil {
+		return "", err
+	}
+	d.Set("rendered", string(b))
+
+	return hash(string(b)), handleReport(link.Validate())
 }

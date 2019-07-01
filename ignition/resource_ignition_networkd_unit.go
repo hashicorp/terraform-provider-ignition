@@ -1,6 +1,8 @@
 package ignition
 
 import (
+	"encoding/json"
+
 	"github.com/coreos/ignition/config/v2_1/types"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -20,12 +22,16 @@ func dataSourceNetworkdUnit() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"rendered": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
 func resourceNetworkdUnitRead(d *schema.ResourceData, meta interface{}) error {
-	id, err := buildNetworkdUnit(d, globalCache)
+	id, err := buildNetworkdUnit(d)
 	if err != nil {
 		return err
 	}
@@ -40,7 +46,7 @@ func resourceNetworkdUnitDelete(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourceNetworkdUnitExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	id, err := buildNetworkdUnit(d, globalCache)
+	id, err := buildNetworkdUnit(d)
 	if err != nil {
 		return false, err
 	}
@@ -48,11 +54,17 @@ func resourceNetworkdUnitExists(d *schema.ResourceData, meta interface{}) (bool,
 	return id == d.Id(), nil
 }
 
-func buildNetworkdUnit(d *schema.ResourceData, c *cache) (string, error) {
+func buildNetworkdUnit(d *schema.ResourceData) (string, error) {
 	unit := &types.Networkdunit{
 		Name:     d.Get("name").(string),
 		Contents: d.Get("content").(string),
 	}
 
-	return c.addNetworkdUnit(unit), handleReport(unit.Validate())
+	b, err := json.Marshal(unit)
+	if err != nil {
+		return "", err
+	}
+	d.Set("rendered", string(b))
+
+	return hash(string(b)), handleReport(unit.Validate())
 }

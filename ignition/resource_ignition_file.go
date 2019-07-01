@@ -2,6 +2,7 @@ package ignition
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -85,12 +86,16 @@ func dataSourceFile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"rendered": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
 func resourceFileRead(d *schema.ResourceData, meta interface{}) error {
-	id, err := buildFile(d, globalCache)
+	id, err := buildFile(d)
 	if err != nil {
 		return err
 	}
@@ -100,7 +105,7 @@ func resourceFileRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceFileExists(d *schema.ResourceData, meta interface{}) (bool, error) {
-	id, err := buildFile(d, globalCache)
+	id, err := buildFile(d)
 	if err != nil {
 		return false, err
 	}
@@ -108,7 +113,7 @@ func resourceFileExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 	return id == d.Id(), nil
 }
 
-func buildFile(d *schema.ResourceData, c *cache) (string, error) {
+func buildFile(d *schema.ResourceData) (string, error) {
 	_, hasContent := d.GetOk("content")
 	_, hasSource := d.GetOk("source")
 	if hasContent && hasSource {
@@ -164,7 +169,13 @@ func buildFile(d *schema.ResourceData, c *cache) (string, error) {
 		file.Group = types.NodeGroup{ID: &gid}
 	}
 
-	return c.addFile(file), nil
+	b, err := json.Marshal(file)
+	if err != nil {
+		return "", err
+	}
+	d.Set("rendered", string(b))
+
+	return hash(string(b)), nil
 }
 
 func encodeDataURL(mime, content string) string {
