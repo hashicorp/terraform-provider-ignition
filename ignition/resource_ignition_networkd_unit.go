@@ -40,11 +40,6 @@ func resourceNetworkdUnitRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceNetworkdUnitDelete(d *schema.ResourceData, meta interface{}) error {
-	d.SetId("")
-	return nil
-}
-
 func resourceNetworkdUnitExists(d *schema.ResourceData, meta interface{}) (bool, error) {
 	id, err := buildNetworkdUnit(d)
 	if err != nil {

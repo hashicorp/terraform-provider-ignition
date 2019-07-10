@@ -40,19 +40,6 @@ func hash(s string) string {
 	return hex.EncodeToString(sha[:])
 }
 
-func castSliceInterface(i []interface{}) []string {
-	var o []string
-	for _, value := range i {
-		if value == nil {
-			continue
-		}
-
-		o = append(o, value.(string))
-	}
-
-	return o
-}
-
 func getInt(d *schema.ResourceData, key string) *int {
 	var i *int
 	if value, ok := d.GetOk(key); ok {
