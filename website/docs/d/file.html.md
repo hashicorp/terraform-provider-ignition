@@ -52,7 +52,7 @@ The following arguments are supported:
 
 	__Note__: `content` and `source` are mutually exclusive.
 
-* `mode` - (Optional) The file's permission mode. The mode must be properly specified as a decimal value (i.e. 0644 -> 420).
+* `mode` - (Optional) The file's permission mode. Note that the mode can be specified as either an octal value (e.g 0755) or a decimal value (i.e. 493 as equivalent to the octal 0755).
 
 * `uid` - (Optional) The user ID of the owner.
 

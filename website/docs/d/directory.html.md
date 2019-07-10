@@ -27,7 +27,7 @@ The following arguments are supported:
 
 * `path` - (Required) The absolute path to the directory.
 
-* `mode` - (Optional) The directory's permission mode. Note that the mode can be specified as a decimal value (i.e. 0755 -> 493) or an octal value(i.e 0755).
+* `mode` - (Optional) The directory's permission mode. Note that the mode can be specified as either an octal value (e.g 0755) or a decimal value (i.e. 493 as equivalent to the octal 0755).
 
 * `uid` - (Optional) The user ID of the owner.
 
