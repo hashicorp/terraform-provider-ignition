@@ -37,9 +37,9 @@ func TestIngnitionFilesystem(t *testing.T) {
 
 		data "ignition_config" "test" {
 			filesystems = [
-				"${data.ignition_filesystem.foo.id}",
-				"${data.ignition_filesystem.qux.id}",
-				"${data.ignition_filesystem.baz.id}",
+				"${data.ignition_filesystem.foo.rendered}",
+				"${data.ignition_filesystem.qux.rendered}",
+				"${data.ignition_filesystem.baz.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -119,7 +119,7 @@ func TestIngnitionFilesystemInvalidPath(t *testing.T) {
 
 		data "ignition_config" "test" {
 			filesystems = [
-				"${data.ignition_filesystem.foo.id}",
+				"${data.ignition_filesystem.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("absolute"))
@@ -138,7 +138,7 @@ func TestIngnitionFilesystemInvalidPathAndMount(t *testing.T) {
 
 		data "ignition_config" "test" {
 			filesystems = [
-				"${data.ignition_filesystem.foo.id}",
+				"${data.ignition_filesystem.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("mount and path"))

@@ -19,7 +19,7 @@ func TestIngnitionRaid(t *testing.T) {
 
 		data "ignition_config" "test" {
 			arrays = [
-				"${data.ignition_raid.foo.id}",
+				"${data.ignition_raid.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -59,7 +59,7 @@ func TestIngnitionRaidInvalidLevel(t *testing.T) {
 
 		data "ignition_config" "test" {
 			arrays = [
-				"${data.ignition_raid.foo.id}",
+				"${data.ignition_raid.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("raid level"))
@@ -76,7 +76,7 @@ func TestIngnitionRaidInvalidDevices(t *testing.T) {
 
 		data "ignition_config" "test" {
 			arrays = [
-				"${data.ignition_raid.foo.id}",
+				"${data.ignition_raid.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("absolute"))

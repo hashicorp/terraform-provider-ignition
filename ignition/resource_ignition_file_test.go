@@ -42,9 +42,9 @@ func TestIngnitionFile(t *testing.T) {
 
 		data "ignition_config" "test" {
 			files = [
-				"${data.ignition_file.foo.id}",
-				"${data.ignition_file.qux.id}",
-				"${data.ignition_file.nop.id}",
+				"${data.ignition_file.foo.rendered}",
+				"${data.ignition_file.qux.rendered}",
+				"${data.ignition_file.nop.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -136,7 +136,7 @@ func TestIngnitionFileInvalidMode(t *testing.T) {
 
 		data "ignition_config" "test" {
 			files = [
-				"${data.ignition_file.foo.id}",
+				"${data.ignition_file.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("illegal file mode"))
@@ -155,7 +155,7 @@ func TestIngnitionFileInvalidPath(t *testing.T) {
 
 		data "ignition_config" "test" {
 			files = [
-				"${data.ignition_file.foo.id}",
+				"${data.ignition_file.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("absolute"))

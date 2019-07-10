@@ -22,7 +22,7 @@ func TestIngnitionDisk(t *testing.T) {
 
 		data "ignition_config" "test" {
 			disks = [
-				"${data.ignition_disk.foo.id}",
+				"${data.ignition_disk.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -68,7 +68,7 @@ func TestIngnitionDiskInvalidDevice(t *testing.T) {
 
 		data "ignition_config" "test" {
 			disks = [
-				"${data.ignition_disk.foo.id}",
+				"${data.ignition_disk.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("path not absolute"))
@@ -94,7 +94,7 @@ func TestIngnitionDiskInvalidPartition(t *testing.T) {
 
 		data "ignition_config" "test" {
 			disks = [
-				"${data.ignition_disk.foo.id}",
+				"${data.ignition_disk.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("overlap"))

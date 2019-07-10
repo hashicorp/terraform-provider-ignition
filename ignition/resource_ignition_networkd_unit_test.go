@@ -16,7 +16,7 @@ func TestIngnitionNetworkdUnit(t *testing.T) {
 
 		data "ignition_config" "test" {
 			networkd = [
-				"${data.ignition_networkd_unit.foo.id}",
+				"${data.ignition_networkd_unit.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {

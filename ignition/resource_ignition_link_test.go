@@ -21,7 +21,7 @@ func TestIngnitionLink(t *testing.T) {
 
 		data "ignition_config" "test" {
 			links = [
-				"${data.ignition_link.foo.id}",
+				"${data.ignition_link.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -68,7 +68,7 @@ func TestIngnitionLinkInvalidPath(t *testing.T) {
 
 		data "ignition_config" "test" {
 			links = [
-				"${data.ignition_link.foo.id}",
+				"${data.ignition_link.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("absolute"))

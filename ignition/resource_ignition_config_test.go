@@ -124,7 +124,7 @@ func TestIngnitionFileAppendNoVerification(t *testing.T) {
 
 func TestIgnitionConfigDisks(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_disk_ids" {
+	variable "ignition_disk_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -138,8 +138,8 @@ func TestIgnitionConfigDisks(t *testing.T) {
 	 }
 
 	data "ignition_config" "test" {
-		disks = concat([data.ignition_disk.test.id],
-			var.ignition_disk_ids)
+		disks = concat([data.ignition_disk.test.rendered],
+			var.ignition_disk_renders)
 	}
 	`, func(c *types.Config) error {
 		f := c.Storage.Disks[0]
@@ -152,7 +152,7 @@ func TestIgnitionConfigDisks(t *testing.T) {
 
 func TestIgnitionConfigArrays(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_array_ids" {
+	variable "ignition_array_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -167,8 +167,8 @@ func TestIgnitionConfigArrays(t *testing.T) {
 	}
 
 	data "ignition_config" "test" {
-		arrays = concat([data.ignition_raid.md.id],
-			var.ignition_array_ids)
+		arrays = concat([data.ignition_raid.md.rendered],
+			var.ignition_array_renders)
 	}
 	`, func(c *types.Config) error {
 		f := c.Storage.Raid[0]
@@ -181,7 +181,7 @@ func TestIgnitionConfigArrays(t *testing.T) {
 
 func TestIgnitionConfigFilesystems(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_filesystem_ids" {
+	variable "ignition_filesystem_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -196,8 +196,8 @@ func TestIgnitionConfigFilesystems(t *testing.T) {
 
 	data "ignition_config" "test" {
 		filesystems = concat(
-			[data.ignition_filesystem.test.id],
-			var.ignition_filesystem_ids
+			[data.ignition_filesystem.test.rendered],
+			var.ignition_filesystem_renders
 		)
 	}
 	`, func(c *types.Config) error {
@@ -211,7 +211,7 @@ func TestIgnitionConfigFilesystems(t *testing.T) {
 
 func TestIgnitionConfigFiles(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_file_ids" {
+	variable "ignition_file_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -226,8 +226,8 @@ func TestIgnitionConfigFiles(t *testing.T) {
 
 	data "ignition_config" "test" {
 		files = concat(
-			[data.ignition_file.test.id],
-			var.ignition_file_ids,
+			[data.ignition_file.test.rendered],
+			var.ignition_file_renders,
 		)
 	}
 	`, func(c *types.Config) error {
@@ -241,7 +241,7 @@ func TestIgnitionConfigFiles(t *testing.T) {
 
 func TestIgnitionConfigSystemd(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_systemd_ids" {
+	variable "ignition_systemd_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -253,8 +253,8 @@ func TestIgnitionConfigSystemd(t *testing.T) {
 
 	data "ignition_config" "test" {
 		systemd = concat(
-			[data.ignition_systemd_unit.test.id],
-			var.ignition_systemd_ids,
+			[data.ignition_systemd_unit.test.rendered],
+			var.ignition_systemd_renders,
 		)
 	}
 	`, func(c *types.Config) error {
@@ -268,7 +268,7 @@ func TestIgnitionConfigSystemd(t *testing.T) {
 
 func TestIgnitionConfigNetworkd(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_networkd_ids" {
+	variable "ignition_networkd_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -280,8 +280,8 @@ func TestIgnitionConfigNetworkd(t *testing.T) {
 
 	data "ignition_config" "test" {
 		networkd = concat(
-			[data.ignition_networkd_unit.test.id],
-			var.ignition_networkd_ids
+			[data.ignition_networkd_unit.test.rendered],
+			var.ignition_networkd_renders
 			)
 	}
 	`, func(c *types.Config) error {
@@ -295,7 +295,7 @@ func TestIgnitionConfigNetworkd(t *testing.T) {
 
 func TestIgnitionConfigUsers(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_user_ids" {
+	variable "ignition_user_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -308,8 +308,8 @@ func TestIgnitionConfigUsers(t *testing.T) {
 
 	data "ignition_config" "test" {
 		users = concat(
-			[data.ignition_user.test.id],
-			var.ignition_user_ids
+			[data.ignition_user.test.rendered],
+			var.ignition_user_renders
 		)
 	}
 	`, func(c *types.Config) error {
@@ -323,7 +323,7 @@ func TestIgnitionConfigUsers(t *testing.T) {
 
 func TestIgnitionConfigGroupss(t *testing.T) {
 	testIgnition(t, `
-	variable "ignition_group_ids" {
+	variable "ignition_group_renders" {
 		type = "list"
 		default = [""]
 	}
@@ -334,8 +334,8 @@ func TestIgnitionConfigGroupss(t *testing.T) {
 
 	data "ignition_config" "test" {
 		groups = concat(
-			[data.ignition_group.test.id],
-			var.ignition_group_ids
+			[data.ignition_group.test.rendered],
+			var.ignition_group_renders
 		)
 	}
 	`, func(c *types.Config) error {

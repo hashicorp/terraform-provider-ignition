@@ -53,12 +53,12 @@ func dataSourceDisk() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
-						"rendered": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
 					},
 				},
+			},
+			"rendered": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}

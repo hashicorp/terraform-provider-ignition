@@ -31,8 +31,8 @@ func TestIngnitionUser(t *testing.T) {
 
 		data "ignition_config" "test" {
 			users = [
-				"${data.ignition_user.foo.id}",
-				"${data.ignition_user.qux.id}",
+				"${data.ignition_user.foo.rendered}",
+				"${data.ignition_user.qux.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
