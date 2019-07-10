@@ -3,6 +3,8 @@ package ignition
 import (
 	"encoding/json"
 
+	"github.com/pkg/errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 
 	"github.com/coreos/ignition/config/v2_1/types"
@@ -220,7 +222,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		d := types.Disk{}
 		err := json.Unmarshal([]byte(disk.(string)), &d)
 		if err != nil {
-			return storage, err
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		storage.Disks = append(storage.Disks, d)
@@ -234,7 +236,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		a := types.Raid{}
 		err := json.Unmarshal([]byte(array.(string)), &a)
 		if err != nil {
-			return storage, err
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		storage.Raid = append(storage.Raid, a)
@@ -248,7 +250,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		f := types.Filesystem{}
 		err := json.Unmarshal([]byte(fs.(string)), &f)
 		if err != nil {
-			return storage, err
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		storage.Filesystems = append(storage.Filesystems, f)
@@ -262,7 +264,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		f := types.File{}
 		err := json.Unmarshal([]byte(file.(string)), &f)
 		if err != nil {
-			return storage, err
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		storage.Files = append(storage.Files, f)
@@ -276,7 +278,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		f := types.Directory{}
 		err := json.Unmarshal([]byte(dir.(string)), &f)
 		if err != nil {
-			return storage, err
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		storage.Directories = append(storage.Directories, f)
@@ -290,7 +292,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		f := types.Link{}
 		err := json.Unmarshal([]byte(link.(string)), &f)
 		if err != nil {
-			return storage, err
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		storage.Links = append(storage.Links, f)
@@ -311,7 +313,7 @@ func buildSystemd(d *schema.ResourceData) (types.Systemd, error) {
 		u := types.Unit{}
 		err := json.Unmarshal([]byte(unit.(string)), &u)
 		if err != nil {
-			return systemd, err
+			return systemd, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		systemd.Units = append(systemd.Units, u)
@@ -332,7 +334,7 @@ func buildNetworkd(d *schema.ResourceData) (types.Networkd, error) {
 		u := types.Networkdunit{}
 		err := json.Unmarshal([]byte(unit.(string)), &u)
 		if err != nil {
-			return networkd, err
+			return networkd, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		networkd.Units = append(networkd.Units, u)
@@ -352,7 +354,7 @@ func buildPasswd(d *schema.ResourceData) (types.Passwd, error) {
 		u := types.PasswdUser{}
 		err := json.Unmarshal([]byte(user.(string)), &u)
 		if err != nil {
-			return passwd, err
+			return passwd, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		passwd.Users = append(passwd.Users, u)
@@ -366,7 +368,7 @@ func buildPasswd(d *schema.ResourceData) (types.Passwd, error) {
 		g := types.PasswdGroup{}
 		err := json.Unmarshal([]byte(group.(string)), &g)
 		if err != nil {
-			return passwd, err
+			return passwd, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
 		}
 
 		passwd.Groups = append(passwd.Groups, g)
