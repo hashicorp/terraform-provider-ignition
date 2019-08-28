@@ -35,7 +35,7 @@ data "ignition_systemd_unit" "example" {
 # Ingnition config include the previous defined systemd unit data resource
 data "ignition_config" "example" {
   systemd = [
-    "${data.ignition_systemd_unit.example.id}",
+    data.ignition_systemd_unit.example.rendered,
   ]
 }
 
@@ -43,6 +43,6 @@ data "ignition_config" "example" {
 resource "aws_instance" "web" {
   # ...
 
-  user_data = "${data.ignition_config.example.rendered}"
+  user_data = data.ignition_config.example.rendered"
 }
 ```

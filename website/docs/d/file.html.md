@@ -76,6 +76,6 @@ The `source` block supports:
 
 The following attributes are exported:
 
-* `id` - ID used to reference this resource in _ignition_config_.
+* `rendered` - The rendered template to reference this resource in _ignition_config_.
 
 [rfc2397]: https://tools.ietf.org/html/rfc2397
