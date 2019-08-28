@@ -43,6 +43,6 @@ data "ignition_config" "example" {
 resource "aws_instance" "web" {
   # ...
 
-  user_data = data.ignition_config.example.rendered"
+  user_data = data.ignition_config.example.rendered
 }
 ```
