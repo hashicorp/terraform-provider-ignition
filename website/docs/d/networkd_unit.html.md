@@ -31,4 +31,4 @@ The following arguments are supported:
 
 The following attributes are exported:
 
-* `rendered` - The rendered template to reference this resource in _ignition_config_.g_.
+* `rendered` - The rendered template to reference this resource in _ignition_config_.
