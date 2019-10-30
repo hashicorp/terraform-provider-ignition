@@ -24,7 +24,7 @@ func TestIngnitionSystemdUnit(t *testing.T) {
 
 		data "ignition_config" "test" {
 			systemd = [
-				"${data.ignition_systemd_unit.foo.id}",
+				"${data.ignition_systemd_unit.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -70,7 +70,7 @@ func TestIngnitionSystemdUnitEmptyContentWithDropIn(t *testing.T) {
 
 		data "ignition_config" "test" {
 			systemd = [
-				"${data.ignition_systemd_unit.foo.id}",
+				"${data.ignition_systemd_unit.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -106,7 +106,7 @@ func TestIgnitionSystemdUnit_emptyContent(t *testing.T) {
 
 		data "ignition_config" "test" {
 			systemd = [
-				"${data.ignition_systemd_unit.foo.id}",
+				"${data.ignition_systemd_unit.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -137,7 +137,7 @@ func TestIngnitionSystemUnitInvalidName(t *testing.T) {
 
 		data "ignition_config" "test" {
 			systemd = [
-				"${data.ignition_systemd_unit.foo.id}",
+				"${data.ignition_systemd_unit.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("invalid"))
@@ -153,7 +153,7 @@ func TestIngnitionSystemUnitInvalidContent(t *testing.T) {
 
 		data "ignition_config" "test" {
 			systemd = [
-				"${data.ignition_systemd_unit.foo.id}",
+				"${data.ignition_systemd_unit.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("section"))

@@ -20,7 +20,7 @@ func TestIngnitionDirectory(t *testing.T) {
 
 		data "ignition_config" "test" {
 			directories = [
-				"${data.ignition_directory.foo.id}",
+				"${data.ignition_directory.foo.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
@@ -63,7 +63,7 @@ func TestIngnitionDirectoryInvalidMode(t *testing.T) {
 
 		data "ignition_config" "test" {
 			directories = [
-				"${data.ignition_directory.foo.id}",
+				"${data.ignition_directory.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("illegal file mode"))
@@ -79,7 +79,7 @@ func TestIngnitionDirectoryInvalidPath(t *testing.T) {
 
 		data "ignition_config" "test" {
 			directories = [
-				"${data.ignition_directory.foo.id}",
+				"${data.ignition_directory.foo.rendered}",
 			]
 		}
 	`, regexp.MustCompile("absolute"))

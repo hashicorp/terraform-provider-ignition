@@ -43,4 +43,4 @@ The `dropin` block supports:
 
 The following attributes are exported:
 
-* `id` - ID used to reference this resource in _ignition_config_.
+* `rendered` - The rendered template to reference this resource in _ignition_config_.

@@ -21,8 +21,8 @@ func TestIngnitionGroup(t *testing.T) {
 
 		data "ignition_config" "test" {
 			groups = [
-				"${data.ignition_group.foo.id}",
-				"${data.ignition_group.qux.id}",
+				"${data.ignition_group.foo.rendered}",
+				"${data.ignition_group.qux.rendered}",
 			]
 		}
 	`, func(c *types.Config) error {
