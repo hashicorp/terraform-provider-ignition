@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/coreos/ignition/config/v2_1/types"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func dataSourceFile() *schema.Resource {

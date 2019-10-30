@@ -8,8 +8,8 @@ import (
 	"log"
 
 	"github.com/coreos/ignition/config/validate/report"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
 func Provider() terraform.ResourceProvider {
