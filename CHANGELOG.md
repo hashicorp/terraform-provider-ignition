@@ -1,4 +1,16 @@
-## 1.1.1 (Unreleased)
+## 1.2.0 (Unreleased)
+
+IMPROVEMENTS:
+
+* Bump Terraform SDK to 1.4.0
+* Wrap the errors with an extra message
+* Remove unused functions
+* Update documentation
+
+BUG FIXES:
+
+* Remove in-memory cache (#57)
+
 ## 1.1.0 (May 28, 2019)
 
 IMPROVEMENTS:
