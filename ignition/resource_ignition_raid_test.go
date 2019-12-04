@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionRaid(t *testing.T) {
+func TestIgnitionRaid(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_raid" "foo" {
 			name = "foo"
@@ -48,7 +48,7 @@ func TestIngnitionRaid(t *testing.T) {
 	})
 }
 
-func TestIngnitionRaidInvalidLevel(t *testing.T) {
+func TestIgnitionRaidInvalidLevel(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_raid" "foo" {
 			name = "foo"
@@ -65,7 +65,7 @@ func TestIngnitionRaidInvalidLevel(t *testing.T) {
 	`, regexp.MustCompile("raid level"))
 }
 
-func TestIngnitionRaidInvalidDevices(t *testing.T) {
+func TestIgnitionRaidInvalidDevices(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_raid" "foo" {
 			name = "foo"

@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-func TestIngnitionFileReplace(t *testing.T) {
+func TestIgnitionFileReplace(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_config" "test" {
 			replace {
@@ -37,7 +37,7 @@ func TestIngnitionFileReplace(t *testing.T) {
 	})
 }
 
-func TestIngnitionFileAppend(t *testing.T) {
+func TestIgnitionFileAppend(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_config" "test" {
 			append {
@@ -68,7 +68,7 @@ func TestIngnitionFileAppend(t *testing.T) {
 	})
 }
 
-func TestIngnitionFileReplaceNoVerification(t *testing.T) {
+func TestIgnitionFileReplaceNoVerification(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_config" "test" {
 			replace {
@@ -93,7 +93,7 @@ func TestIngnitionFileReplaceNoVerification(t *testing.T) {
 	})
 }
 
-func TestIngnitionFileAppendNoVerification(t *testing.T) {
+func TestIgnitionFileAppendNoVerification(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_config" "test" {
 			append {
