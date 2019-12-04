@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionDirectory(t *testing.T) {
+func TestIgnitionDirectory(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_directory" "foo" {
 			filesystem = "foo"
@@ -53,7 +53,7 @@ func TestIngnitionDirectory(t *testing.T) {
 	})
 }
 
-func TestIngnitionDirectoryInvalidMode(t *testing.T) {
+func TestIgnitionDirectoryInvalidMode(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_directory" "foo" {
 			filesystem = "foo"
@@ -69,7 +69,7 @@ func TestIngnitionDirectoryInvalidMode(t *testing.T) {
 	`, regexp.MustCompile("illegal file mode"))
 }
 
-func TestIngnitionDirectoryInvalidPath(t *testing.T) {
+func TestIgnitionDirectoryInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_directory" "foo" {
 			filesystem = "foo"

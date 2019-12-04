@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionFilesystem(t *testing.T) {
+func TestIgnitionFilesystem(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_filesystem" "foo" {
 			name = "foo"
@@ -110,7 +110,7 @@ func TestIngnitionFilesystem(t *testing.T) {
 	})
 }
 
-func TestIngnitionFilesystemInvalidPath(t *testing.T) {
+func TestIgnitionFilesystemInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_filesystem" "foo" {
 			name = "foo"
@@ -125,7 +125,7 @@ func TestIngnitionFilesystemInvalidPath(t *testing.T) {
 	`, regexp.MustCompile("absolute"))
 }
 
-func TestIngnitionFilesystemInvalidPathAndMount(t *testing.T) {
+func TestIgnitionFilesystemInvalidPathAndMount(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_filesystem" "foo" {
 			name = "foo"

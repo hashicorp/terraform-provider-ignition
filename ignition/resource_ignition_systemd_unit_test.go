@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionSystemdUnit(t *testing.T) {
+func TestIgnitionSystemdUnit(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_systemd_unit" "foo" {
 			name = "foo.service"
@@ -58,7 +58,7 @@ func TestIngnitionSystemdUnit(t *testing.T) {
 	})
 }
 
-func TestIngnitionSystemdUnitEmptyContentWithDropIn(t *testing.T) {
+func TestIgnitionSystemdUnitEmptyContentWithDropIn(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_systemd_unit" "foo" {
 			name = "foo.service"
@@ -128,7 +128,7 @@ func TestIgnitionSystemdUnit_emptyContent(t *testing.T) {
 	})
 }
 
-func TestIngnitionSystemUnitInvalidName(t *testing.T) {
+func TestIgnitionSystemUnitInvalidName(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_systemd_unit" "foo" {
 			name = "foo"
@@ -143,7 +143,7 @@ func TestIngnitionSystemUnitInvalidName(t *testing.T) {
 	`, regexp.MustCompile("invalid"))
 }
 
-func TestIngnitionSystemUnitInvalidContent(t *testing.T) {
+func TestIgnitionSystemUnitInvalidContent(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_systemd_unit" "foo" {
 			name = "foo.service"

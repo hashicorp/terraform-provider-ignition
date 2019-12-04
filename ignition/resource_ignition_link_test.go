@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionLink(t *testing.T) {
+func TestIgnitionLink(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_link" "foo" {
 			filesystem = "foo"
@@ -58,7 +58,7 @@ func TestIngnitionLink(t *testing.T) {
 	})
 }
 
-func TestIngnitionLinkInvalidPath(t *testing.T) {
+func TestIgnitionLinkInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_link" "foo" {
 			filesystem = "foo"

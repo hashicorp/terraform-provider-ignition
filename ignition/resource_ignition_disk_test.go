@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionDisk(t *testing.T) {
+func TestIgnitionDisk(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_disk" "foo" {
 			device = "/foo"
@@ -60,7 +60,7 @@ func TestIngnitionDisk(t *testing.T) {
 	})
 }
 
-func TestIngnitionDiskInvalidDevice(t *testing.T) {
+func TestIgnitionDiskInvalidDevice(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_disk" "foo" {
 			device = "a"
@@ -74,7 +74,7 @@ func TestIngnitionDiskInvalidDevice(t *testing.T) {
 	`, regexp.MustCompile("path not absolute"))
 }
 
-func TestIngnitionDiskInvalidPartition(t *testing.T) {
+func TestIgnitionDiskInvalidPartition(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_disk" "foo" {
 			device = "/foo"

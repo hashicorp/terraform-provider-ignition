@@ -7,7 +7,7 @@ import (
 	"github.com/coreos/ignition/config/v2_1/types"
 )
 
-func TestIngnitionNetworkdUnit(t *testing.T) {
+func TestIgnitionNetworkdUnit(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_networkd_unit" "foo" {
 			name = "foo.link"
