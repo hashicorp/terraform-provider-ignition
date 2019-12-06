@@ -2,8 +2,10 @@ package ignition
 
 import (
 	"encoding/json"
+	"reflect"
 
 	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/validate"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -92,5 +94,5 @@ func buildLink(d *schema.ResourceData) (string, error) {
 	}
 	d.Set("rendered", string(b))
 
-	return hash(string(b)), handleReport(link.Validate())
+	return hash(string(b)), handleReport(validate.ValidateWithoutSource(reflect.ValueOf(link)))
 }
