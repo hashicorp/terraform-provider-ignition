@@ -1,3 +1,4 @@
+## 1.2.2 (Unreleased)
 ## 1.2.1 (December 12, 2019)
 ## 1.2.0 (December 04, 2019)
 
