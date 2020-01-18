@@ -7,7 +7,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/ignition/v2/config/validate"
 )
 
 var configReferenceResource = &schema.Resource{
@@ -65,11 +66,6 @@ func dataSourceConfig() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"networkd": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
 			"users": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -87,7 +83,7 @@ func dataSourceConfig() *schema.Resource {
 				MaxItems: 1,
 				Elem:     configReferenceResource,
 			},
-			"append": {
+			"merge": {
 				Type:     schema.TypeList,
 				ForceNew: true,
 				Optional: true,
@@ -157,34 +153,34 @@ func buildConfig(d *schema.ResourceData) (*types.Config, error) {
 		return nil, err
 	}
 
-	config.Networkd, err = buildNetworkd(d)
-	if err != nil {
-		return nil, err
-	}
-
 	config.Passwd, err = buildPasswd(d)
 	if err != nil {
 		return nil, err
 	}
 
-	return config, handleReport(config.Validate())
+	b, err := json.Marshal(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, handleReport(validate.ValidateWithContext(new(*types.Config), b))
 }
 
 func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
-	var err error
-
 	i := types.Ignition{}
 	i.Version = types.MaxVersion.String()
 
 	rr := d.Get("replace.0").(map[string]interface{})
 	if len(rr) != 0 {
-		i.Config.Replace, err = buildConfigReference(rr)
+		r, err := buildConfigReference(rr)
 		if err != nil {
 			return i, err
 		}
+
+		i.Config.Replace = *r
 	}
 
-	ar := d.Get("append").([]interface{})
+	ar := d.Get("merge").([]interface{})
 	if len(ar) != 0 {
 		for _, rr := range ar {
 			r, err := buildConfigReference(rr.(map[string]interface{}))
@@ -192,7 +188,7 @@ func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
 				return i, err
 			}
 
-			i.Config.Append = append(i.Config.Append, *r)
+			i.Config.Merge = append(i.Config.Merge, *r)
 		}
 	}
 
@@ -201,8 +197,10 @@ func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
 
 func buildConfigReference(raw map[string]interface{}) (*types.ConfigReference, error) {
 	r := &types.ConfigReference{}
-	r.Source = raw["source"].(string)
-
+	source := raw["source"].(string)
+	if source != "" {
+		r.Source = &source
+	}
 	hash := raw["verification"].(string)
 	if hash != "" {
 		r.Verification.Hash = &hash
@@ -321,26 +319,6 @@ func buildSystemd(d *schema.ResourceData) (types.Systemd, error) {
 
 	return systemd, nil
 
-}
-
-func buildNetworkd(d *schema.ResourceData) (types.Networkd, error) {
-	networkd := types.Networkd{}
-
-	for _, unit := range d.Get("networkd").([]interface{}) {
-		if unit == nil {
-			continue
-		}
-
-		u := types.Networkdunit{}
-		err := json.Unmarshal([]byte(unit.(string)), &u)
-		if err != nil {
-			return networkd, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
-		}
-
-		networkd.Units = append(networkd.Units, u)
-	}
-
-	return networkd, nil
 }
 
 func buildPasswd(d *schema.ResourceData) (types.Passwd, error) {

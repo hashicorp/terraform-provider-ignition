@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
 )
 
 func TestIgnitionUser(t *testing.T) {
@@ -31,8 +31,8 @@ func TestIgnitionUser(t *testing.T) {
 
 		data "ignition_config" "test" {
 			users = [
-				"${data.ignition_user.foo.rendered}",
-				"${data.ignition_user.qux.rendered}",
+				data.ignition_user.foo.rendered,
+				data.ignition_user.qux.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
@@ -62,20 +62,20 @@ func TestIgnitionUser(t *testing.T) {
 			return fmt.Errorf("Field Uid didn't match. Expected: %d, Given: %d", uint(42), u.UID)
 		}
 
-		if u.Gecos != "gecos" {
-			return fmt.Errorf("Field GECOS didn't match. Expected: %s, Given: %s", "gecos", u.Gecos)
+		if *u.Gecos != "gecos" {
+			return fmt.Errorf("Field GECOS didn't match. Expected: %s, Given: %s", "gecos", *u.Gecos)
 		}
 
-		if u.HomeDir != "home" {
-			return fmt.Errorf("Field Homedir didn't match. Expected: %s, Given: %s", "home", u.HomeDir)
+		if *u.HomeDir != "home" {
+			return fmt.Errorf("Field Homedir didn't match. Expected: %s, Given: %s", "home", *u.HomeDir)
 		}
 
-		if u.NoCreateHome != true {
-			return fmt.Errorf("Field NoCreateHome didn't match. Expected: %t, Given: %t", true, u.NoCreateHome)
+		if *u.NoCreateHome != true {
+			return fmt.Errorf("Field NoCreateHome didn't match. Expected: %t, Given: %t", true, *u.NoCreateHome)
 		}
 
-		if u.PrimaryGroup != "primary_group" {
-			return fmt.Errorf("Field PrimaryGroup didn't match. Expected: %s, Given: %s", "primary_group", u.PrimaryGroup)
+		if *u.PrimaryGroup != "primary_group" {
+			return fmt.Errorf("Field PrimaryGroup didn't match. Expected: %s, Given: %s", "primary_group", *u.PrimaryGroup)
 		}
 
 		if len(u.Groups) != 1 {
@@ -86,20 +86,20 @@ func TestIgnitionUser(t *testing.T) {
 			return fmt.Errorf("Field Groups didn't match. Expected: %s, Given: %s", "group", u.Groups[0])
 		}
 
-		if u.NoUserGroup != true {
-			return fmt.Errorf("Field NoUserGroup didn't match. Expected: %t, Given: %t", true, u.NoUserGroup)
+		if *u.NoUserGroup != true {
+			return fmt.Errorf("Field NoUserGroup didn't match. Expected: %t, Given: %t", true, *u.NoUserGroup)
 		}
 
-		if u.NoLogInit != true {
-			return fmt.Errorf("Field NoLogInit didn't match. Expected: %t, Given: %t", true, u.NoLogInit)
+		if *u.NoLogInit != true {
+			return fmt.Errorf("Field NoLogInit didn't match. Expected: %t, Given: %t", true, *u.NoLogInit)
 		}
 
-		if u.Shell != "shell" {
-			return fmt.Errorf("Field Shell didn't match. Expected: %s, Given: %s", "shell", u.Shell)
+		if *u.Shell != "shell" {
+			return fmt.Errorf("Field Shell didn't match. Expected: %s, Given: %s", "shell", *u.Shell)
 		}
 
-		if u.System != true {
-			return fmt.Errorf("Field System didn't match. Expected: %v, Given: %v", true, u.System)
+		if *u.System != true {
+			return fmt.Errorf("Field System didn't match. Expected: %v, Given: %v", true, *u.System)
 		}
 
 		u = c.Passwd.Users[1]

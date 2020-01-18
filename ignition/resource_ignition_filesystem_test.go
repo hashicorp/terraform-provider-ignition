@@ -5,105 +5,67 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
 )
 
 func TestIgnitionFilesystem(t *testing.T) {
 	testIgnition(t, `
-		data "ignition_filesystem" "foo" {
-			name = "foo"
-			path = "/foo"
-		}
-
 		data "ignition_filesystem" "qux" {
-			name = "qux"
-			mount {
-				device = "/qux"
-				format = "ext4"
-			}
+			device = "/qux"
+			format = "ext4"
 		}
-
 		data "ignition_filesystem" "baz" {
-			name = "baz"
-			mount {
-				device = "/baz"
-				format = "ext4"
-				wipe_filesystem = true
-				label = "root"
-				uuid = "qux"
-				options = ["rw"]
-			}
+			device = "/baz"
+			format = "ext4"
+			wipe_filesystem = true
+			label = "root"
+			uuid = "qux"
+			options = ["rw"]
 		}
-
 		data "ignition_config" "test" {
 			filesystems = [
-				"${data.ignition_filesystem.foo.rendered}",
-				"${data.ignition_filesystem.qux.rendered}",
-				"${data.ignition_filesystem.baz.rendered}",
+				data.ignition_filesystem.qux.rendered,
+				data.ignition_filesystem.baz.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Filesystems) != 3 {
+		if len(c.Storage.Filesystems) != 2 {
 			return fmt.Errorf("disks, found %d", len(c.Storage.Filesystems))
 		}
 
 		f := c.Storage.Filesystems[0]
-		if f.Name != "foo" {
-			return fmt.Errorf("name, found %q", f.Name)
+		if f.Device != "/qux" {
+			return fmt.Errorf("device, found %q", f.Device)
 		}
 
-		if f.Mount != nil {
-			return fmt.Errorf("mount, found %q", f.Mount.Device)
-		}
-
-		if string(*f.Path) != "/foo" {
-			return fmt.Errorf("path, found %q", *f.Path)
+		if string(*f.Format) != "ext4" {
+			return fmt.Errorf("format, found %q", *f.Format)
 		}
 
 		f = c.Storage.Filesystems[1]
-		if f.Name != "qux" {
-			return fmt.Errorf("name, found %q", f.Name)
+
+		if f.Device != "/baz" {
+			return fmt.Errorf("device, found %q", f.Device)
 		}
 
-		if f.Mount.Device != "/qux" {
-			return fmt.Errorf("mount.0.device, found %q", f.Mount.Device)
+		if *f.Format != "ext4" {
+			return fmt.Errorf("format, found %q", *f.Format)
 		}
 
-		if f.Mount.Format != "ext4" {
-			return fmt.Errorf("mount.0.format, found %q", f.Mount.Format)
+		if *f.Label != "root" {
+			return fmt.Errorf("label, found %q", *f.Label)
 		}
 
-		if f.Mount.Create != nil {
-			return fmt.Errorf("mount, create was found %#v", f.Mount.Create)
+		if *f.UUID != "qux" {
+			return fmt.Errorf("uuid, found %q", *f.UUID)
 		}
 
-		f = c.Storage.Filesystems[2]
-		if f.Name != "baz" {
-			return fmt.Errorf("name, found %q", f.Name)
+		if *f.WipeFilesystem != true {
+			return fmt.Errorf("wipe_filesystem, found %t", *f.WipeFilesystem)
 		}
 
-		if f.Mount.Device != "/baz" {
-			return fmt.Errorf("mount.0.device, found %q", f.Mount.Device)
-		}
-
-		if f.Mount.Format != "ext4" {
-			return fmt.Errorf("mount.0.format, found %q", f.Mount.Format)
-		}
-
-		if *f.Mount.Label != "root" {
-			return fmt.Errorf("mount.0.label, found %q", *f.Mount.Label)
-		}
-
-		if *f.Mount.UUID != "qux" {
-			return fmt.Errorf("mount.0.uuid, found %q", *f.Mount.UUID)
-		}
-
-		if f.Mount.WipeFilesystem != true {
-			return fmt.Errorf("mount.0.wipe_filesystem, found %t", f.Mount.WipeFilesystem)
-		}
-
-		if len(f.Mount.Options) != 1 || f.Mount.Options[0] != "rw" {
-			return fmt.Errorf("mount.0.options, found %q", f.Mount.Options)
+		if len(f.Options) != 1 || f.Options[0] != "rw" {
+			return fmt.Errorf("options, found %q", f.Options)
 		}
 
 		return nil
@@ -112,34 +74,22 @@ func TestIgnitionFilesystem(t *testing.T) {
 
 func TestIgnitionFilesystemInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
+		variable "ignition_filesystem_renders" {
+			type = "list"
+			default = [""]
+		}
+
 		data "ignition_filesystem" "foo" {
-			name = "foo"
+			device = "/foo"
+			format = "ext4"
 			path = "foo"
 		}
 
 		data "ignition_config" "test" {
-			filesystems = [
-				"${data.ignition_filesystem.foo.rendered}",
-			]
+			filesystems = concat(
+				[data.ignition_filesystem.foo.rendered],
+				var.ignition_filesystem_renders
+			)
 		}
 	`, regexp.MustCompile("absolute"))
-}
-
-func TestIgnitionFilesystemInvalidPathAndMount(t *testing.T) {
-	testIgnitionError(t, `
-		data "ignition_filesystem" "foo" {
-			name = "foo"
-			path = "/foo"
-			mount {
-				device = "/qux"
-				format = "ext4"
-			}
-		}
-
-		data "ignition_config" "test" {
-			filesystems = [
-				"${data.ignition_filesystem.foo.rendered}",
-			]
-		}
-	`, regexp.MustCompile("mount and path"))
 }

@@ -3,7 +3,8 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/ignition/v2/config/validate"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -56,9 +57,14 @@ func resourceGroupExists(d *schema.ResourceData, meta interface{}) (bool, error)
 
 func buildGroup(d *schema.ResourceData) (string, error) {
 	group := &types.PasswdGroup{
-		Name:         d.Get("name").(string),
-		PasswordHash: d.Get("password_hash").(string),
-		Gid:          getInt(d, "gid"),
+		Name: d.Get("name").(string),
+		Gid:  getInt(d, "gid"),
+	}
+
+	passhash, hasPasshash := d.GetOk("password_hash")
+	if hasPasshash {
+		str := passhash.(string)
+		group.PasswordHash = &str
 	}
 
 	b, err := json.Marshal(group)
@@ -67,5 +73,5 @@ func buildGroup(d *schema.ResourceData) (string, error) {
 	}
 	d.Set("rendered", string(b))
 
-	return hash(string(b)), nil
+	return hash(string(b)), handleReport(validate.ValidateWithContext(new(*types.PasswdGroup), b))
 }

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/coreos/ignition/config/validate/report"
+	"github.com/coreos/vcontext/report"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
@@ -15,17 +15,16 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"ignition_config":        dataSourceConfig(),
-			"ignition_disk":          dataSourceDisk(),
-			"ignition_raid":          dataSourceRaid(),
-			"ignition_filesystem":    dataSourceFilesystem(),
-			"ignition_file":          dataSourceFile(),
-			"ignition_directory":     dataSourceDirectory(),
-			"ignition_link":          dataSourceLink(),
-			"ignition_systemd_unit":  dataSourceSystemdUnit(),
-			"ignition_networkd_unit": dataSourceNetworkdUnit(),
-			"ignition_user":          dataSourceUser(),
-			"ignition_group":         dataSourceGroup(),
+			"ignition_config":       dataSourceConfig(),
+			"ignition_disk":         dataSourceDisk(),
+			"ignition_raid":         dataSourceRaid(),
+			"ignition_filesystem":   dataSourceFilesystem(),
+			"ignition_file":         dataSourceFile(),
+			"ignition_directory":    dataSourceDirectory(),
+			"ignition_link":         dataSourceLink(),
+			"ignition_systemd_unit": dataSourceSystemdUnit(),
+			"ignition_user":         dataSourceUser(),
+			"ignition_group":        dataSourceGroup(),
 		},
 	}
 }

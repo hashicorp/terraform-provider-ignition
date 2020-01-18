@@ -3,7 +3,8 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/vcontext/path"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -82,33 +83,43 @@ func resourceSystemdUnitExists(d *schema.ResourceData, meta interface{}) (bool, 
 func buildSystemdUnit(d *schema.ResourceData) (string, error) {
 	enabled := d.Get("enabled").(bool)
 	unit := &types.Unit{
-		Name:     d.Get("name").(string),
-		Contents: d.Get("content").(string),
-		Enabled:  &enabled,
-		Mask:     d.Get("mask").(bool),
+		Name:    d.Get("name").(string),
+		Enabled: &enabled,
 	}
 
-	if err := handleReport(unit.ValidateName()); err != nil {
-		return "", err
+	content, hasContent := d.GetOk("content")
+	if hasContent {
+		str := content.(string)
+		unit.Contents = &str
 	}
 
-	if err := handleReport(unit.ValidateContents()); err != nil {
-		return "", err
+	mask, hasMask := d.GetOk("mask")
+	if hasMask {
+		bmask := mask.(bool)
+		unit.Mask = &bmask
 	}
 
 	for _, raw := range d.Get("dropin").([]interface{}) {
 		value := raw.(map[string]interface{})
 
 		d := types.Dropin{
-			Name:     value["name"].(string),
-			Contents: value["content"].(string),
+			Name: value["name"].(string),
 		}
 
-		if err := handleReport(d.Validate()); err != nil {
+		contents := value["content"].(string)
+		if contents != "" {
+			d.Contents = &contents
+		}
+
+		if err := handleReport(d.Validate(path.ContextPath{})); err != nil {
 			return "", err
 		}
 
 		unit.Dropins = append(unit.Dropins, d)
+	}
+
+	if err := handleReport(unit.Validate(path.ContextPath{})); err != nil {
+		return "", err
 	}
 
 	b, err := json.Marshal(unit)

@@ -5,13 +5,12 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
 )
 
 func TestIgnitionDirectory(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_directory" "foo" {
-			filesystem = "foo"
 			path = "/foo"
 			mode = 420
 			uid = 42
@@ -19,9 +18,7 @@ func TestIgnitionDirectory(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			directories = [
-				"${data.ignition_directory.foo.rendered}",
-			]
+			directories = [data.ignition_directory.foo.rendered]
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Directories) != 1 {
@@ -29,16 +26,12 @@ func TestIgnitionDirectory(t *testing.T) {
 		}
 
 		f := c.Storage.Directories[0]
-		if f.Filesystem != "foo" {
-			return fmt.Errorf("filesystem, found %q", f.Filesystem)
-		}
-
 		if f.Path != "/foo" {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
 
-		if f.Mode != 420 {
-			return fmt.Errorf("mode, found %q", f.Mode)
+		if int(*f.Mode) != 420 {
+			return fmt.Errorf("mode, found %q", *f.Mode)
 		}
 
 		if *f.User.ID != 42 {
@@ -56,15 +49,12 @@ func TestIgnitionDirectory(t *testing.T) {
 func TestIgnitionDirectoryInvalidMode(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_directory" "foo" {
-			filesystem = "foo"
 			path = "/foo"
 			mode = 999999
 		}
 
 		data "ignition_config" "test" {
-			directories = [
-				"${data.ignition_directory.foo.rendered}",
-			]
+			directories = [data.ignition_directory.foo.rendered]
 		}
 	`, regexp.MustCompile("illegal file mode"))
 }
@@ -72,15 +62,12 @@ func TestIgnitionDirectoryInvalidMode(t *testing.T) {
 func TestIgnitionDirectoryInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_directory" "foo" {
-			filesystem = "foo"
 			path = "foo"
 			mode = 999999
 		}
 
 		data "ignition_config" "test" {
-			directories = [
-				"${data.ignition_directory.foo.rendered}",
-			]
+			directories = [data.ignition_directory.foo.rendered]
 		}
-	`, regexp.MustCompile("absolute"))
+	`, regexp.MustCompile("path not absolute"))
 }

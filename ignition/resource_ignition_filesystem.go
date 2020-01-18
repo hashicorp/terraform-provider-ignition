@@ -3,7 +3,8 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
+	vcontext_path "github.com/coreos/vcontext/path"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -12,51 +13,36 @@ func dataSourceFilesystem() *schema.Resource {
 		Exists: resourceFilesystemExists,
 		Read:   resourceFilesystemRead,
 		Schema: map[string]*schema.Schema{
-			"name": {
+			"device": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"format": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"wipe_filesystem": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
+			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-			"mount": {
+			"uuid": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"options": {
 				Type:     schema.TypeList,
 				Optional: true,
 				ForceNew: true,
-				MaxItems: 1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"device": {
-							Type:     schema.TypeString,
-							Required: true,
-							ForceNew: true,
-						},
-						"format": {
-							Type:     schema.TypeString,
-							Required: true,
-							ForceNew: true,
-						},
-						"wipe_filesystem": {
-							Type:     schema.TypeBool,
-							Optional: true,
-							ForceNew: true,
-						},
-						"label": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"uuid": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"options": {
-							Type:     schema.TypeList,
-							Optional: true,
-							ForceNew: true,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-						},
-					},
-				},
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"path": {
 				Type:     schema.TypeString,
@@ -92,49 +78,41 @@ func resourceFilesystemExists(d *schema.ResourceData, meta interface{}) (bool, e
 
 func buildFilesystem(d *schema.ResourceData) (string, error) {
 	fs := &types.Filesystem{
-		Name: d.Get("name").(string),
+		Device: d.Get("device").(string),
+	}
+	path, hasPath := d.GetOk("path")
+	if hasPath {
+		str := path.(string)
+		fs.Path = &str
 	}
 
-	if _, ok := d.GetOk("mount"); ok {
-		fs.Mount = &types.Mount{
-			Device:         d.Get("mount.0.device").(string),
-			Format:         d.Get("mount.0.format").(string),
-			WipeFilesystem: d.Get("mount.0.wipe_filesystem").(bool),
-		}
-
-		if err := handleReport(fs.Mount.ValidateDevice()); err != nil {
-			return "", err
-		}
-
-		label, hasLabel := d.GetOk("mount.0.label")
-		if hasLabel {
-			str := label.(string)
-			fs.Mount.Label = &str
-
-			if err := handleReport(fs.Mount.ValidateLabel()); err != nil {
-				return "", err
-			}
-		}
-
-		uuid, hasUUID := d.GetOk("mount.0.uuid")
-		if hasUUID {
-			str := uuid.(string)
-			fs.Mount.UUID = &str
-		}
-
-		options, hasOptions := d.GetOk("mount.0.options")
-		if hasOptions {
-			fs.Mount.Options = castSliceInterfaceToMountOption(options.([]interface{}))
-		}
+	format, hasFormat := d.GetOk("format")
+	if hasFormat {
+		str := format.(string)
+		fs.Format = &str
 	}
 
-	if p, ok := d.GetOk("path"); ok {
-		path := p.(string)
-		fs.Path = &path
+	wipe, hasWipeFilesystem := d.GetOk("wipe_filesystem")
+	if hasWipeFilesystem {
+		wp := wipe.(bool)
+		fs.WipeFilesystem = &wp
+	}
 
-		if err := handleReport(fs.ValidatePath()); err != nil {
-			return "", err
-		}
+	label, hasLabel := d.GetOk("label")
+	if hasLabel {
+		str := label.(string)
+		fs.Label = &str
+	}
+
+	uuid, hasUUID := d.GetOk("uuid")
+	if hasUUID {
+		str := uuid.(string)
+		fs.UUID = &str
+	}
+
+	options, hasOptions := d.GetOk("options")
+	if hasOptions {
+		fs.Options = castSliceInterfaceToMountOption(options.([]interface{}))
 	}
 
 	b, err := json.Marshal(fs)
@@ -143,17 +121,17 @@ func buildFilesystem(d *schema.ResourceData) (string, error) {
 	}
 	d.Set("rendered", string(b))
 
-	return hash(string(b)), handleReport(fs.Validate())
+	return hash(string(b)), handleReport(fs.Validate(vcontext_path.ContextPath{}))
 }
 
-func castSliceInterfaceToMountOption(i []interface{}) []types.MountOption {
-	var o []types.MountOption
+func castSliceInterfaceToMountOption(i []interface{}) []types.FilesystemOption {
+	var o []types.FilesystemOption
 	for _, value := range i {
 		if value == nil {
 			continue
 		}
 
-		o = append(o, types.MountOption(value.(string)))
+		o = append(o, types.FilesystemOption(value.(string)))
 	}
 
 	return o

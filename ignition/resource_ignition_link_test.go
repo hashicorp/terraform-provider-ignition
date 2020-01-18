@@ -5,13 +5,12 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
 )
 
 func TestIgnitionLink(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_link" "foo" {
-			filesystem = "foo"
 			path = "/foo"
 			target = "/bar"
 			hard = true
@@ -20,9 +19,7 @@ func TestIgnitionLink(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			links = [
-				"${data.ignition_link.foo.rendered}",
-			]
+			links = [data.ignition_link.foo.rendered]
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Links) != 1 {
@@ -30,10 +27,6 @@ func TestIgnitionLink(t *testing.T) {
 		}
 
 		f := c.Storage.Links[0]
-		if f.Filesystem != "foo" {
-			return fmt.Errorf("filesystem, found %q", f.Filesystem)
-		}
-
 		if f.Path != "/foo" {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
@@ -42,8 +35,8 @@ func TestIgnitionLink(t *testing.T) {
 			return fmt.Errorf("target, found %q", f.Target)
 		}
 
-		if f.Hard != true {
-			return fmt.Errorf("hard, found %v", f.Hard)
+		if *f.Hard != true {
+			return fmt.Errorf("hard, found %v", *f.Hard)
 		}
 
 		if *f.User.ID != 42 {
@@ -61,15 +54,12 @@ func TestIgnitionLink(t *testing.T) {
 func TestIgnitionLinkInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_link" "foo" {
-			filesystem = "foo"
 			path = "foo"
 			target = "bar"
 		}
 
 		data "ignition_config" "test" {
-			links = [
-				"${data.ignition_link.foo.rendered}",
-			]
+			links = [data.ignition_link.foo.rendered]
 		}
 	`, regexp.MustCompile("absolute"))
 }

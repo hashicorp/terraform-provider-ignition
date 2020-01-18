@@ -5,13 +5,12 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
 )
 
 func TestIgnitionFile(t *testing.T) {
 	testIgnition(t, `
 		data "ignition_file" "foo" {
-			filesystem = "foo"
 			path = "/foo"
 			content {
 				content = "foo"
@@ -22,7 +21,6 @@ func TestIgnitionFile(t *testing.T) {
 		}
 
 		data "ignition_file" "qux" {
-			filesystem = "qux"
 			path = "/qux"
 			source {
 				source = "qux"
@@ -32,7 +30,6 @@ func TestIgnitionFile(t *testing.T) {
 		}
 
 		data "ignition_file" "nop" {
-			filesystem = "nop"
 			path = "/nop"
 			source {
 				source = "nop"
@@ -42,9 +39,9 @@ func TestIgnitionFile(t *testing.T) {
 
 		data "ignition_config" "test" {
 			files = [
-				"${data.ignition_file.foo.rendered}",
-				"${data.ignition_file.qux.rendered}",
-				"${data.ignition_file.nop.rendered}",
+				data.ignition_file.foo.rendered,
+				data.ignition_file.qux.rendered,
+				data.ignition_file.nop.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
@@ -53,20 +50,16 @@ func TestIgnitionFile(t *testing.T) {
 		}
 
 		f := c.Storage.Files[0]
-		if f.Filesystem != "foo" {
-			return fmt.Errorf("filesystem, found %q", f.Filesystem)
-		}
-
 		if f.Path != "/foo" {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
 
-		if f.Contents.Source != "data:text/plain;charset=utf-8;base64,Zm9v" {
-			return fmt.Errorf("contents.source, found %q", f.Contents.Source)
+		if string(*f.Contents.Source) != "data:text/plain;charset=utf-8;base64,Zm9v" {
+			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
 		}
 
-		if f.Mode != 420 {
-			return fmt.Errorf("mode, found %q", f.Mode)
+		if int(*f.Mode) != 420 {
+			return fmt.Errorf("mode, found %q", *f.Mode)
 		}
 
 		if *f.User.ID != 42 {
@@ -78,20 +71,16 @@ func TestIgnitionFile(t *testing.T) {
 		}
 
 		f = c.Storage.Files[1]
-		if f.Filesystem != "qux" {
-			return fmt.Errorf("filesystem, found %q", f.Filesystem)
-		}
-
 		if f.Path != "/qux" {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
 
-		if f.Contents.Source != "qux" {
-			return fmt.Errorf("contents.source, found %q", f.Contents.Source)
+		if string(*f.Contents.Source) != "qux" {
+			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
 		}
 
-		if f.Contents.Compression != "gzip" {
-			return fmt.Errorf("contents.compression, found %q", f.Contents.Compression)
+		if string(*f.Contents.Compression) != "gzip" {
+			return fmt.Errorf("contents.compression, found %q", *f.Contents.Compression)
 		}
 
 		if *f.Contents.Verification.Hash != "sha512-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" {
@@ -99,20 +88,16 @@ func TestIgnitionFile(t *testing.T) {
 		}
 
 		f = c.Storage.Files[2]
-		if f.Filesystem != "nop" {
-			return fmt.Errorf("filesystem, found %q", f.Filesystem)
-		}
-
 		if f.Path != "/nop" {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
 
-		if f.Contents.Source != "nop" {
-			return fmt.Errorf("contents.source, found %q", f.Contents.Source)
+		if string(*f.Contents.Source) != "nop" {
+			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
 		}
 
-		if f.Contents.Compression != "gzip" {
-			return fmt.Errorf("contents.compression, found %q", f.Contents.Compression)
+		if string(*f.Contents.Compression) != "gzip" {
+			return fmt.Errorf("contents.compression, found %q", *f.Contents.Compression)
 		}
 
 		if f.Contents.Verification.Hash != nil {
@@ -126,7 +111,6 @@ func TestIgnitionFile(t *testing.T) {
 func TestIgnitionFileInvalidMode(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_file" "foo" {
-			filesystem = "foo"
 			path = "/foo"
 			mode = 999999
 			content {
@@ -135,9 +119,7 @@ func TestIgnitionFileInvalidMode(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			files = [
-				"${data.ignition_file.foo.rendered}",
-			]
+			files = [data.ignition_file.foo.rendered]
 		}
 	`, regexp.MustCompile("illegal file mode"))
 }
@@ -145,7 +127,6 @@ func TestIgnitionFileInvalidMode(t *testing.T) {
 func TestIgnitionFileInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		data "ignition_file" "foo" {
-			filesystem = "foo"
 			path = "foo"
 			mode = 999999
 			content {
@@ -154,9 +135,7 @@ func TestIgnitionFileInvalidPath(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			files = [
-				"${data.ignition_file.foo.rendered}",
-			]
+			files = [data.ignition_file.foo.rendered]
 		}
 	`, regexp.MustCompile("absolute"))
 }

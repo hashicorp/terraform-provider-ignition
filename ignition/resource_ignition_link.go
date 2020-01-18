@@ -2,10 +2,10 @@ package ignition
 
 import (
 	"encoding/json"
-	"reflect"
 
-	"github.com/coreos/ignition/config/v2_1/types"
-	"github.com/coreos/ignition/config/validate"
+	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/ignition/v2/config/validate"
+	"github.com/coreos/vcontext/path"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -14,11 +14,6 @@ func dataSourceLink() *schema.Resource {
 		Exists: resourceLinkExists,
 		Read:   resourceLinkRead,
 		Schema: map[string]*schema.Schema{
-			"filesystem": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
 			"path": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -73,10 +68,18 @@ func resourceLinkExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 
 func buildLink(d *schema.ResourceData) (string, error) {
 	link := &types.Link{}
-	link.Filesystem = d.Get("filesystem").(string)
 	link.Path = d.Get("path").(string)
+	if err := handleReport(link.Node.Validate(path.ContextPath{})); err != nil {
+		return "", err
+	}
+
 	link.Target = d.Get("target").(string)
-	link.Hard = d.Get("hard").(bool)
+
+	hard, hasHard := d.GetOk("hard")
+	if hasHard {
+		bhard := hard.(bool)
+		link.Hard = &bhard
+	}
 
 	uid := d.Get("uid").(int)
 	if uid != 0 {
@@ -94,5 +97,5 @@ func buildLink(d *schema.ResourceData) (string, error) {
 	}
 	d.Set("rendered", string(b))
 
-	return hash(string(b)), handleReport(validate.ValidateWithoutSource(reflect.ValueOf(link)))
+	return hash(string(b)), handleReport(validate.ValidateWithContext(new(*types.Link), b))
 }
