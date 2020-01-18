@@ -64,18 +64,22 @@ github.com/aws/aws-sdk-go/service/sts/stsiface
 github.com/bgentry/go-netrc/netrc
 # github.com/bgentry/speakeasy v0.1.0
 github.com/bgentry/speakeasy
-# github.com/coreos/go-semver v0.2.0
+# github.com/coreos/go-semver v0.3.0
 github.com/coreos/go-semver/semver
 # github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f
 github.com/coreos/go-systemd/unit
-# github.com/coreos/ignition v0.34.0
-github.com/coreos/ignition/config/shared/errors
-github.com/coreos/ignition/config/shared/validations
-github.com/coreos/ignition/config/v2_1/types
-github.com/coreos/ignition/config/validate
-github.com/coreos/ignition/config/validate/astjson
-github.com/coreos/ignition/config/validate/astnode
-github.com/coreos/ignition/config/validate/report
+# github.com/coreos/ignition/v2 v2.1.1
+github.com/coreos/ignition/v2/config/shared/errors
+github.com/coreos/ignition/v2/config/shared/validations
+github.com/coreos/ignition/v2/config/util
+github.com/coreos/ignition/v2/config/v3_0/types
+github.com/coreos/ignition/v2/config/validate
+# github.com/coreos/vcontext v0.0.0-20190529201340-22b159166068
+github.com/coreos/vcontext/json
+github.com/coreos/vcontext/path
+github.com/coreos/vcontext/report
+github.com/coreos/vcontext/tree
+github.com/coreos/vcontext/validate
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/fatih/color v1.7.0
@@ -108,7 +112,7 @@ github.com/googleapis/gax-go/v2
 github.com/hashicorp/errwrap
 # github.com/hashicorp/go-cleanhttp v0.5.1
 github.com/hashicorp/go-cleanhttp
-# github.com/hashicorp/go-getter v1.4.0
+# github.com/hashicorp/go-getter v1.4.2-0.20200106182914-9813cbd4eb02
 github.com/hashicorp/go-getter
 github.com/hashicorp/go-getter/helper/url
 # github.com/hashicorp/go-hclog v0.10.0
@@ -134,7 +138,7 @@ github.com/hashicorp/hcl/hcl/token
 github.com/hashicorp/hcl/json/parser
 github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
-# github.com/hashicorp/hcl/v2 v2.1.0
+# github.com/hashicorp/hcl/v2 v2.2.0
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/dynblock
 github.com/hashicorp/hcl/v2/ext/typeexpr
@@ -272,8 +276,6 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# go4.org v0.0.0-20191010144846-132d2879e1e9
-go4.org/errorutil
 # golang.org/x/crypto v0.0.0-20191202143827-86a70503ff7e
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
