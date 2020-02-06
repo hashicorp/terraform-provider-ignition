@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 	"github.com/coreos/ignition/config/validate"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -80,12 +80,12 @@ func buildLink(d *schema.ResourceData) (string, error) {
 
 	uid := d.Get("uid").(int)
 	if uid != 0 {
-		link.User = types.NodeUser{ID: &uid}
+		link.User = &types.NodeUser{ID: &uid}
 	}
 
 	gid := d.Get("gid").(int)
 	if gid != 0 {
-		link.Group = types.NodeGroup{ID: &gid}
+		link.Group = &types.NodeGroup{ID: &gid}
 	}
 
 	b, err := json.Marshal(link)

@@ -3,7 +3,7 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -76,19 +76,20 @@ func buildDirectory(d *schema.ResourceData) (string, error) {
 		return "", err
 	}
 
-	dir.Mode = d.Get("mode").(int)
+	dirMode := d.Get("mode").(int)
+	dir.Mode = &dirMode
 	if err := handleReport(dir.ValidateMode()); err != nil {
 		return "", err
 	}
 
 	uid := d.Get("uid").(int)
 	if uid != 0 {
-		dir.User = types.NodeUser{ID: &uid}
+		dir.User = &types.NodeUser{ID: &uid}
 	}
 
 	gid := d.Get("gid").(int)
 	if gid != 0 {
-		dir.Group = types.NodeGroup{ID: &gid}
+		dir.Group = &types.NodeGroup{ID: &gid}
 	}
 
 	b, err := json.Marshal(dir)

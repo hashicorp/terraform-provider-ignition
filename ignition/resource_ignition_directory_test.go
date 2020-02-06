@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 )
 
 func TestIgnitionDirectory(t *testing.T) {
@@ -37,8 +37,8 @@ func TestIgnitionDirectory(t *testing.T) {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
 
-		if f.Mode != 420 {
-			return fmt.Errorf("mode, found %q", f.Mode)
+		if *f.Mode != 420 {
+			return fmt.Errorf("mode, found %q", *f.Mode)
 		}
 
 		if *f.User.ID != 42 {

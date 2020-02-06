@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 )
 
 func TestIgnitionDisk(t *testing.T) {
@@ -40,16 +40,16 @@ func TestIgnitionDisk(t *testing.T) {
 		}
 
 		p := d.Partitions[0]
-		if p.Label != "qux" {
-			return fmt.Errorf("parition.0.label, found %q", p.Label)
+		if *p.Label != "qux" {
+			return fmt.Errorf("parition.0.label, found %q", *p.Label)
 		}
 
-		if p.Size != 42 {
-			return fmt.Errorf("parition.0.size, found %q", p.Size)
+		if *p.Size != 42 {
+			return fmt.Errorf("parition.0.size, found %q", *p.Size)
 		}
 
-		if p.Start != 2048 {
-			return fmt.Errorf("parition.0.start, found %q", p.Start)
+		if *p.Start != 2048 {
+			return fmt.Errorf("parition.0.start, found %q", *p.Start)
 		}
 
 		if p.TypeGUID != "01234567-89AB-CDEF-EDCB-A98765432101" {

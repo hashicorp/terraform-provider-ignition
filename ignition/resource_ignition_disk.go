@@ -3,7 +3,7 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -95,12 +95,24 @@ func buildDisk(d *schema.ResourceData) (string, error) {
 
 	for _, raw := range d.Get("partition").([]interface{}) {
 		v := raw.(map[string]interface{})
+
+		partitionLabel := v["label"].(string)
+		partitionSize := v["size"].(int)
+		partitionStart := v["start"].(int)
 		p := types.Partition{
-			Label:    v["label"].(string),
+			Label:    &partitionLabel,
 			Number:   v["number"].(int),
-			Size:     v["size"].(int),
-			Start:    v["start"].(int),
+			Size:     &partitionSize,
+			Start:    &partitionStart,
 			TypeGUID: v["type_guid"].(string),
+		}
+
+		if err := handleReport(p.ValidateSize()); err != nil {
+			return "", err
+		}
+
+		if err := handleReport(p.ValidateStart()); err != nil {
+			return "", err
 		}
 
 		if err := handleReport(p.ValidateLabel()); err != nil {
@@ -112,6 +124,10 @@ func buildDisk(d *schema.ResourceData) (string, error) {
 		}
 
 		if err := handleReport(p.ValidateTypeGUID()); err != nil {
+			return "", err
+		}
+
+		if err := handleReport(p.Validate()); err != nil {
 			return "", err
 		}
 

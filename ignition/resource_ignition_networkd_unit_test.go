@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 )
 
 func TestIgnitionNetworkdUnit(t *testing.T) {

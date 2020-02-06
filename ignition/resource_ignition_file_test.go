@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/config/v2_4/types"
 )
 
 func TestIgnitionFile(t *testing.T) {
@@ -65,8 +65,8 @@ func TestIgnitionFile(t *testing.T) {
 			return fmt.Errorf("contents.source, found %q", f.Contents.Source)
 		}
 
-		if f.Mode != 420 {
-			return fmt.Errorf("mode, found %q", f.Mode)
+		if *f.Mode != 420 {
+			return fmt.Errorf("mode, found %q", *f.Mode)
 		}
 
 		if *f.User.ID != 42 {
