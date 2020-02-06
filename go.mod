@@ -9,14 +9,14 @@ require (
 	github.com/aws/aws-sdk-go v1.25.47 // indirect
 	github.com/coreos/go-semver v0.2.0 // indirect
 	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f // indirect
-	github.com/coreos/ignition v0.34.0
+	github.com/coreos/ignition v0.35.0
 	github.com/go-test/deep v1.0.4 // indirect
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/hashicorp/go-hclog v0.10.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.1.0 // indirect
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20191121111010-e9629612a215 // indirect
-	github.com/hashicorp/terraform-plugin-sdk v1.4.0
+	github.com/hashicorp/terraform-plugin-sdk v1.6.0
 	github.com/hashicorp/terraform-svchost v0.0.0-20191119180714-d2e4933b9136 // indirect
 	github.com/hashicorp/yamux v0.0.0-20190923154419-df201c70410d // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
