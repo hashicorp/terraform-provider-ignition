@@ -55,7 +55,7 @@ func (u Unit) ValidateName() report.Report {
 	return r
 }
 
-func (d Dropin) Validate() report.Report {
+func (d SystemdDropin) Validate() report.Report {
 	r := report.Report{}
 
 	if _, err := validateUnitContent(d.Contents); err != nil {
@@ -92,6 +92,28 @@ func (u Networkdunit) Validate() report.Report {
 	default:
 		r.Add(report.Entry{
 			Message: errors.ErrInvalidNetworkdExt.Error(),
+			Kind:    report.EntryError,
+		})
+	}
+
+	return r
+}
+
+func (d NetworkdDropin) Validate() report.Report {
+	r := report.Report{}
+
+	if _, err := validateUnitContent(d.Contents); err != nil {
+		r.Add(report.Entry{
+			Message: err.Error(),
+			Kind:    report.EntryError,
+		})
+	}
+
+	switch path.Ext(d.Name) {
+	case ".conf":
+	default:
+		r.Add(report.Entry{
+			Message: errors.ErrInvalidNetworkdDropinExt.Error(),
 			Kind:    report.EntryError,
 		})
 	}
