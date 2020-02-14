@@ -19,6 +19,12 @@ func dataSourceLink() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"overwrite": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  false,
+			},
 			"target": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -72,6 +78,9 @@ func buildLink(d *schema.ResourceData) (string, error) {
 	if err := handleReport(link.Node.Validate(path.ContextPath{})); err != nil {
 		return "", err
 	}
+
+	overwrite := d.Get("overwrite").(bool)
+	link.Overwrite = &overwrite
 
 	link.Target = d.Get("target").(string)
 

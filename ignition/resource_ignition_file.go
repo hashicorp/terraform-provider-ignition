@@ -20,6 +20,12 @@ func dataSourceFile() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"overwrite": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  false,
+			},
 			"content": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -147,6 +153,9 @@ func buildFile(d *schema.ResourceData) (string, error) {
 	file := &types.File{}
 
 	file.Path = d.Get("path").(string)
+
+	overwrite := d.Get("overwrite").(bool)
+	file.Overwrite = &overwrite
 
 	file.Contents = contents
 

@@ -18,6 +18,12 @@ func dataSourceDirectory() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"overwrite": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  false,
+			},
 			"mode": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -63,6 +69,9 @@ func resourceDirectoryExists(d *schema.ResourceData, meta interface{}) (bool, er
 func buildDirectory(d *schema.ResourceData) (string, error) {
 	dir := &types.Directory{}
 	dir.Path = d.Get("path").(string)
+
+	overwrite := d.Get("overwrite").(bool)
+	dir.Overwrite = &overwrite
 
 	mode, hasMode := d.GetOk("mode")
 	if hasMode {
