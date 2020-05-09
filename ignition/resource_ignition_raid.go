@@ -84,7 +84,10 @@ func buildRaid(d *schema.ResourceData) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	d.Set("rendered", string(b))
+	err = d.Set("rendered", string(b))
+	if err != nil {
+		return "", err
+	}
 
 	return hash(string(b)), nil
 }
