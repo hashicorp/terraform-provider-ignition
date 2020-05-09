@@ -1,5 +1,29 @@
 # Changes
 
+## v1.7.0
+- V4 signed URL support:
+  - Add support for bucket-bound domains and virtual hosted style URLs.
+  - Add support for query parameters in the signature.
+  - Fix text encoding to align with standards.
+- Add the object name to query parameters for write calls.
+- Fix retry behavior when reading files with Content-Encoding gzip.
+- Fix response header in reader.
+- New code examples:
+   - Error handling for `ObjectHandle` preconditions.
+   - Existence checks for buckets and objects.
+
+## v1.6.0
+
+- Updated option handling:
+  - Don't drop custom scopes (#1756)
+  - Don't drop port in provided endpoint (#1737)
+
+## v1.5.0
+
+- Honor WithEndpoint client option for reads as well as writes.
+- Add archive storage class to docs.
+- Make fixes to storage benchwrapper.
+
 ## v1.4.0
 
 - When listing objects in a bucket, allow callers to specify which attributes
