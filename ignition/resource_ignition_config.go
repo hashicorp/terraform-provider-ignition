@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
-	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/ignition/v2/config/v3_1/types"
 	"github.com/coreos/ignition/v2/config/validate"
 )
 
@@ -195,8 +195,8 @@ func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
 	return i, nil
 }
 
-func buildConfigReference(raw map[string]interface{}) (*types.ConfigReference, error) {
-	r := &types.ConfigReference{}
+func buildConfigReference(raw map[string]interface{}) (*types.Resource, error) {
+	r := &types.Resource{}
 	source := raw["source"].(string)
 	if source != "" {
 		r.Source = &source

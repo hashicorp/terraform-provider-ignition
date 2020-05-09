@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/ignition/v2/config/v3_1/types"
 	"github.com/coreos/vcontext/path"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -126,7 +126,7 @@ func buildFile(d *schema.ResourceData) (string, error) {
 		return "", fmt.Errorf("content or source options must be present")
 	}
 
-	var contents types.FileContents
+	var contents types.Resource
 	if hasContent {
 		s := encodeDataURL(
 			d.Get("content.0.mime").(string),
@@ -183,7 +183,10 @@ func buildFile(d *schema.ResourceData) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	d.Set("rendered", string(b))
+	err = d.Set("rendered", string(b))
+	if err != nil {
+		return "", err
+	}
 
 	return hash(string(b)), nil
 }

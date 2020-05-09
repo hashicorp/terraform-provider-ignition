@@ -3,7 +3,7 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/v2/config/v3_0/types"
+	"github.com/coreos/ignition/v2/config/v3_1/types"
 	"github.com/coreos/vcontext/path"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
@@ -126,7 +126,10 @@ func buildSystemdUnit(d *schema.ResourceData) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	d.Set("rendered", string(b))
+	err = d.Set("rendered", string(b))
+	if err != nil {
+		return "", err
+	}
 
 	return hash(string(b)), nil
 }
