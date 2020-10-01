@@ -8,6 +8,9 @@ default: build
 build: fmtcheck
 	go install
 
+release: fmtcheck
+	@sh -c "'$(CURDIR)/scripts/build.sh'"
+
 test: fmtcheck
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | \

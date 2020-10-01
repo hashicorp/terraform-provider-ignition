@@ -19,7 +19,7 @@ Building The Provider
 Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-ignition`
 
 ```sh
-$ git clone git@github.com:terraform-providers/terraform-provider-ignition $GOPATH/src/github.com/terraform-providers/terraform-provider-ignition
+$ git clone git@github.com:community-terraform-providers/terraform-provider-ignition $GOPATH/src/github.com/terraform-providers/terraform-provider-ignition
 ```
 
 Enter the provider directory and build the provider

@@ -5,4 +5,5 @@ package tools
 
 import (
 	_ "github.com/kisielk/errcheck"
+	_ "github.com/mitchellh/gox"
 )
