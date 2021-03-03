@@ -16,7 +16,6 @@ File with inline content:
 
 ```hcl
 data "ignition_file" "hello" {
-	filesystem = "foo"
 	path = "/hello.txt"
 	content {
 		content = "Hello World!"
@@ -28,7 +27,6 @@ File with remote content:
 
 ```hcl
 data "ignition_file" "hello" {
-	filesystem = "qux"
 	path = "/hello.txt"
 	source {
 		source = "http://example.com/hello.txt.gz"
@@ -42,9 +40,9 @@ data "ignition_file" "hello" {
 
 The following arguments are supported:
 
-* `filesystem` - (Required) The internal identifier of the filesystem. This matches the last filesystem with the given identifier. This should be a valid name from a _ignition\_filesystem_ resource.
-
 * `path` - (Required) The absolute path to the file.
+
+* `overwrite` - (Optional) Whether to delete preexisting nodes at the path. Defaults to false.
 
 * `content` - (Optional) Block to provide the file content inline.
 
@@ -52,7 +50,7 @@ The following arguments are supported:
 
 	__Note__: `content` and `source` are mutually exclusive.
 
-* `mode` - (Optional) The file's permission mode. Note that the mode can be specified as either an octal value (e.g 0755) or a decimal value (i.e. 493 as equivalent to the octal 0755).
+* `mode` - (Optional) The file's permission mode. Note that the mode must be properly specified as a decimal value, not octal (i.e. 0755 -> 493).
 
 * `uid` - (Optional) The user ID of the owner.
 
