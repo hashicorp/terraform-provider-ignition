@@ -14,9 +14,9 @@ Renders an ignition configuration as JSON. It  contains all the disks, partition
 
 ```hcl
 data "ignition_config" "example" {
-	systemd = [
-		data.ignition_systemd_unit.example.rendered,
-	]
+  systemd = [
+    data.ignition_systemd_unit.example.rendered,
+  ]
 }
 ```
 
@@ -44,12 +44,11 @@ The following arguments are supported:
 
 * `groups` - (Optional) The list of groups to be added.
 
-* `append` - (Optional) Any number of blocks with the configs to be appended to the current config.
+* `merge` - (Optional) A list of the configs to be merged to the current config.
 
 * `replace` - (Optional) A block with config that will replace the current.
 
-
-The `append` and `replace` blocks supports:
+The `merge` and `replace` blocks support:
 
 * `source` - (Required) The URL of the config. Supported schemes are http, https, tftp, s3, and data. When using http, it is advisable to use the verification option to ensure the contents haven't been modified.
 
