@@ -1,4 +1,4 @@
-module github.com/terraform-providers/terraform-provider-ignition/v2
+module github.com/community-terraform-providers/terraform-provider-ignition/v2
 
 require (
 	cloud.google.com/go v0.57.0 // indirect

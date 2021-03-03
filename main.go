@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/community-terraform-providers/terraform-provider-ignition/v2/ignition"
 	"github.com/hashicorp/terraform-plugin-sdk/plugin"
-	"github.com/terraform-providers/terraform-provider-ignition/v2/ignition"
 )
 
 func main() {
