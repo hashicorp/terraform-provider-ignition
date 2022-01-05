@@ -38,8 +38,6 @@ The following arguments are supported:
 
 * `systemd` - (Optional) The list of systemd units. Describes the desired state of the systemd units.
 
-* `networkd` - (Optional) The list of networkd units. Describes the desired state of the networkd files.
-
 * `users` - (Optional) The list of accounts to be added.
 
 * `groups` - (Optional) The list of groups to be added.
