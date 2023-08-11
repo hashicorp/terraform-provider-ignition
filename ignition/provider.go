@@ -14,16 +14,17 @@ import (
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"ignition_config":       dataSourceConfig(),
-			"ignition_disk":         dataSourceDisk(),
-			"ignition_raid":         dataSourceRaid(),
-			"ignition_filesystem":   dataSourceFilesystem(),
-			"ignition_file":         dataSourceFile(),
-			"ignition_directory":    dataSourceDirectory(),
-			"ignition_link":         dataSourceLink(),
-			"ignition_systemd_unit": dataSourceSystemdUnit(),
-			"ignition_user":         dataSourceUser(),
-			"ignition_group":        dataSourceGroup(),
+			"ignition_config":           dataSourceConfig(),
+			"ignition_disk":             dataSourceDisk(),
+			"ignition_raid":             dataSourceRaid(),
+			"ignition_filesystem":       dataSourceFilesystem(),
+			"ignition_file":             dataSourceFile(),
+			"ignition_directory":        dataSourceDirectory(),
+			"ignition_link":             dataSourceLink(),
+			"ignition_systemd_unit":     dataSourceSystemdUnit(),
+			"ignition_user":             dataSourceUser(),
+			"ignition_group":            dataSourceGroup(),
+			"ignition_kernel_arguments": dataSourceKargs(),
 		},
 	}
 }

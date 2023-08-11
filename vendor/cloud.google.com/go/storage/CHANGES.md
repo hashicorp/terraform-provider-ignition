@@ -1,5 +1,15 @@
 # Changes
 
+## v1.9.0
+- Add retry for transient network errors on most operations (with the exception
+  of writes).
+- Bump dependency for google.golang.org/api to capture a change in the default
+  HTTP transport which will improve performance for reads under heavy load.
+- Add CRC32C checksum validation option to Composer.
+
+## v1.8.0
+- Add support for V4 signed post policies.
+
 ## v1.7.0
 - V4 signed URL support:
   - Add support for bucket-bound domains and virtual hosted style URLs.

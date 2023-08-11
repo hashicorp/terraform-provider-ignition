@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
-	"github.com/coreos/ignition/v2/config/v3_1/types"
+	"github.com/coreos/ignition/v2/config/v3_3/types"
 	"github.com/coreos/ignition/v2/config/validate"
 )
 
@@ -75,6 +75,10 @@ func dataSourceConfig() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"kernel_arguments": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"replace": {
 				Type:     schema.TypeList,
@@ -154,6 +158,11 @@ func buildConfig(d *schema.ResourceData) (*types.Config, error) {
 	}
 
 	config.Passwd, err = buildPasswd(d)
+	if err != nil {
+		return nil, err
+	}
+
+	config.KernelArguments, err = buildKernelArguments(d)
 	if err != nil {
 		return nil, err
 	}
@@ -298,6 +307,21 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 
 	return storage, nil
 
+}
+func buildKernelArguments(d *schema.ResourceData) (types.KernelArguments, error) {
+	kargs := types.KernelArguments{}
+
+	k := d.Get("kernel_arguments").(string)
+	if k == "" {
+		return kargs, nil
+	}
+
+	err := json.Unmarshal([]byte(k), &kargs)
+	if err != nil {
+		return kargs, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
+	}
+
+	return kargs, nil
 }
 
 func buildSystemd(d *schema.ResourceData) (types.Systemd, error) {

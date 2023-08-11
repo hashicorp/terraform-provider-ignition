@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/v2/config/v3_1/types"
+	"github.com/coreos/ignition/v2/config/v3_3/types"
 )
 
 func TestIgnitionLink(t *testing.T) {
@@ -44,8 +44,8 @@ func TestIgnitionLink(t *testing.T) {
 			return fmt.Errorf("overwrite, found %v", *f.Overwrite)
 		}
 
-		if f.Target != "/bar" {
-			return fmt.Errorf("target, found %q", f.Target)
+		if *f.Target != "/bar" {
+			return fmt.Errorf("target, found %q", *f.Target)
 		}
 
 		if *f.Hard != true {
@@ -65,8 +65,8 @@ func TestIgnitionLink(t *testing.T) {
 			return fmt.Errorf("path, found %q", f.Path)
 		}
 
-		if f.Target != "/qux" {
-			return fmt.Errorf("target, found %q", f.Target)
+		if *f.Target != "/qux" {
+			return fmt.Errorf("target, found %q", *f.Target)
 		}
 
 		if *f.Overwrite != true {
