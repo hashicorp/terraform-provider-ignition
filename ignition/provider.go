@@ -3,7 +3,6 @@ package ignition
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -29,10 +28,10 @@ func Provider() terraform.ResourceProvider {
 	}
 }
 
-func id(input interface{}) string {
-	b, _ := json.Marshal(input)
-	return hash(string(b))
-}
+// func id(input interface{}) string {
+// 	b, _ := json.Marshal(input)
+// 	return hash(string(b))
+// }
 
 func hash(s string) string {
 	sha := sha256.Sum256([]byte(s))

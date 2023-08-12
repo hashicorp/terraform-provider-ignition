@@ -21,7 +21,7 @@ func TestIgnitionFileReplace(t *testing.T) {
 		}
 	`, func(c *types.Config) error {
 		r := c.Ignition.Config.Replace
-		if &r == nil {
+		if r.Source == nil {
 			return fmt.Errorf("unable to find replace config")
 		}
 
@@ -77,7 +77,7 @@ func TestIgnitionFileReplaceNoVerification(t *testing.T) {
 		}
 	`, func(c *types.Config) error {
 		r := c.Ignition.Config.Replace
-		if &r == nil {
+		if r.Source == nil {
 			return fmt.Errorf("unable to find replace config")
 		}
 
