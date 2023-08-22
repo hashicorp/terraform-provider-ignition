@@ -122,6 +122,47 @@ func TestIgnitionFileMergeNoVerification(t *testing.T) {
 	})
 }
 
+func TestIgnitionConfigReplaceWithHttpHeaders(t *testing.T) {
+	testIgnition(t, `
+		data "ignition_config" "test" {
+			replace {
+				source = "foo"
+				http_headers {
+					name = "Authorization"
+					value = "Basic token"
+				}
+				http_headers {
+					name = "Cache-Control"
+					value = "no-cache"
+				}
+			}
+		}
+	`, func(c *types.Config) error {
+		r := c.Ignition.Config.Replace
+		if r.Source == nil {
+			return fmt.Errorf("unable to find replace config")
+		}
+
+		if *r.Source != "foo" {
+			return fmt.Errorf("config.replace.source, found %q", *r.Source)
+		}
+
+		if len(r.HTTPHeaders) != 2 {
+			return fmt.Errorf("unable to find HTTPHeaders config, expected 2")
+		}
+
+		if string(r.HTTPHeaders[0].Name) != "Authorization" {
+			return fmt.Errorf("config.replace.http_headers[0].name, found %q", r.HTTPHeaders[0].Name)
+		}
+
+		if string(*r.HTTPHeaders[1].Value) != "no-cache" {
+			return fmt.Errorf("config.replace.http_headers[1].value, found %q", *r.HTTPHeaders[1].Value)
+		}
+
+		return nil
+	})
+}
+
 func TestIgnitionConfigDisks(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_disk_renders" {

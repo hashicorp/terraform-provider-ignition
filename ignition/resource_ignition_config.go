@@ -11,6 +11,21 @@ import (
 	"github.com/coreos/ignition/v2/config/validate"
 )
 
+var httpHeaderReferenceResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"name": {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Required: true,
+		},
+		"value": {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Required: true,
+		},
+	},
+}
+
 var configReferenceResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
 		"source": {
@@ -22,6 +37,12 @@ var configReferenceResource = &schema.Resource{
 			Type:     schema.TypeString,
 			ForceNew: true,
 			Optional: true,
+		},
+		"http_headers": {
+			Type:     schema.TypeList,
+			ForceNew: true,
+			Optional: true,
+			Elem:     httpHeaderReferenceResource,
 		},
 	},
 }
@@ -215,7 +236,29 @@ func buildConfigReference(raw map[string]interface{}) (*types.Resource, error) {
 		r.Verification.Hash = &hash
 	}
 
+	for _, hh := range raw["http_headers"].([]interface{}) {
+		h, err := buildConfigHTTPHeaderReference(hh.(map[string]interface{}))
+		if err != nil {
+			return r, err
+		}
+		r.HTTPHeaders = append(r.HTTPHeaders, h)
+	}
+
 	return r, nil
+}
+
+func buildConfigHTTPHeaderReference(raw map[string]interface{}) (types.HTTPHeader, error) {
+	h := types.HTTPHeader{}
+	name := raw["name"].(string)
+	if name != "" {
+		h.Name = name
+	}
+	value := raw["value"].(string)
+	if value != "" {
+		h.Value = &value
+	}
+
+	return h, nil
 }
 
 func buildStorage(d *schema.ResourceData) (types.Storage, error) {
