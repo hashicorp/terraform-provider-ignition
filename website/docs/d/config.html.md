@@ -54,6 +54,15 @@ The `merge` and `replace` blocks support:
 
 * `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is sha512.
 
+* `http_headers` - (Optional) A list of HTTP headers to be added to the request.
+
+The `http_headers` blocks support:
+
+* `name` - (Required) The header name.
+
+* `value` - (Required) The header contents.
+
+
 ## Attributes Reference
 
 The following attributes are exported:
