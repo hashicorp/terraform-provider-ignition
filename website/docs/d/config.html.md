@@ -42,6 +42,8 @@ The following arguments are supported:
 
 * `groups` - (Optional) The list of groups to be added.
 
+* `kernel_arguments` - (Optional) A string that describes the desired kernel arguments.
+
 * `merge` - (Optional) A list of the configs to be merged to the current config.
 
 * `replace` - (Optional) A block with config that will replace the current.
