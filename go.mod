@@ -1,8 +1,8 @@
 module github.com/community-terraform-providers/terraform-provider-ignition/v2
 
 require (
-	github.com/coreos/ignition/v2 v2.11.0
-	github.com/coreos/vcontext v0.0.0-20210407161507-4ee6c745c8bd
+	github.com/coreos/ignition/v2 v2.14.0
+	github.com/coreos/vcontext v0.0.0-20211021162308-f1dbbca7bef4
 	github.com/hashicorp/terraform-plugin-sdk v1.12.0
 	github.com/kisielk/errcheck v1.2.0
 	github.com/mitchellh/gox v1.0.1
@@ -20,7 +20,7 @@ require (
 	github.com/aws/aws-sdk-go v1.34.0 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
-	github.com/coreos/go-json v0.0.0-20200220154158-5ae607161559 // indirect
+	github.com/coreos/go-json v0.0.0-20211020211907-c63f628265de // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -65,7 +65,7 @@ require (
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/ulikunitz/xz v0.5.7 // indirect
-	github.com/vincent-petithory/dataurl v0.0.0-20191104211930-d1553a71de50 // indirect
+	github.com/vincent-petithory/dataurl v1.0.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/zclconf/go-cty v1.4.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.0.1 // indirect
