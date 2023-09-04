@@ -2,7 +2,7 @@ module github.com/community-terraform-providers/terraform-provider-ignition/v2
 
 require (
 	github.com/coreos/ignition/v2 v2.16.2
-	github.com/coreos/vcontext v0.0.0-20230201181013-d72178a18687
+	github.com/coreos/vcontext v0.0.0-20230530201827-5a3e46ba99f8
 	github.com/hashicorp/terraform-plugin-sdk v1.17.2
 	github.com/kisielk/errcheck v1.6.3
 	github.com/mitchellh/gox v1.0.1
