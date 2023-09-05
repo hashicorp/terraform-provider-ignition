@@ -56,7 +56,7 @@ func TestIgnitionFile(t *testing.T) {
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Files) != 4 {
-			return fmt.Errorf("arrays, found %d", len(c.Storage.Raid))
+			return fmt.Errorf("arrays, found %d", len(c.Storage.Files))
 		}
 
 		f := c.Storage.Files[0]

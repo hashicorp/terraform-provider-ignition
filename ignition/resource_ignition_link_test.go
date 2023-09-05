@@ -32,7 +32,7 @@ func TestIgnitionLink(t *testing.T) {
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Links) != 2 {
-			return fmt.Errorf("arrays, found %d", len(c.Storage.Raid))
+			return fmt.Errorf("arrays, found %d", len(c.Storage.Links))
 		}
 
 		f := c.Storage.Links[0]

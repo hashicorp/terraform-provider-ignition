@@ -30,7 +30,7 @@ func TestIgnitionDirectory(t *testing.T) {
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Directories) != 2 {
-			return fmt.Errorf("arrays, found %d", len(c.Storage.Raid))
+			return fmt.Errorf("arrays, found %d", len(c.Storage.Directories))
 		}
 
 		f := c.Storage.Directories[0]
