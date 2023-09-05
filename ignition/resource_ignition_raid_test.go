@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/v2/config/v3_3/types"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
 )
 
 func TestIgnitionRaid(t *testing.T) {

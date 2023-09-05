@@ -15,37 +15,12 @@
 package types
 
 import (
-	"net/url"
-
 	"github.com/coreos/ignition/v2/config/shared/errors"
-	"github.com/coreos/ignition/v2/config/util"
-
-	"github.com/coreos/vcontext/path"
-	"github.com/coreos/vcontext/report"
 )
 
-func (t Tang) Key() string {
-	return t.URL
-}
-
-func (t Tang) Validate(c path.ContextPath) (r report.Report) {
-	r.AddOnError(c.Append("url"), validateTangURL(t.URL))
-	if util.NilOrEmpty(t.Thumbprint) {
-		r.AddOnError(c.Append("thumbprint"), errors.ErrTangThumbprintRequired)
+func validateMode(m *int) error {
+	if m != nil && (*m < 0 || *m > 07777) {
+		return errors.ErrFileIllegalMode
 	}
-	return
-}
-
-func validateTangURL(s string) error {
-	u, err := url.Parse(s)
-	if err != nil {
-		return errors.ErrInvalidUrl
-	}
-
-	switch u.Scheme {
-	case "http", "https":
-		return nil
-	default:
-		return errors.ErrInvalidScheme
-	}
+	return nil
 }
