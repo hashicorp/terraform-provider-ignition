@@ -33,6 +33,11 @@ var configReferenceResource = &schema.Resource{
 			ForceNew: true,
 			Required: true,
 		},
+		"compression": {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Optional: true,
+		},
 		"verification": {
 			Type:     schema.TypeString,
 			ForceNew: true,
@@ -234,6 +239,10 @@ func buildConfigReference(raw map[string]interface{}) (*types.Resource, error) {
 	hash := raw["verification"].(string)
 	if hash != "" {
 		r.Verification.Hash = &hash
+	}
+	compression := raw["compression"].(string)
+	if compression != "" {
+		r.Compression = &compression
 	}
 
 	for _, hh := range raw["http_headers"].([]interface{}) {
