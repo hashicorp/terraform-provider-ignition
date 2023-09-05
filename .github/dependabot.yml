@@ -5,9 +5,16 @@
 
 version: 2
 updates:
-  - package-ecosystem: "gomod"
-    directory: "/"
+  - package-ecosystem: gomod
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
+    assignees:
+      - yussufsh
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
     assignees:
       - yussufsh
