@@ -68,7 +68,7 @@ The `source` block supports:
 
 * `compression` - (Optional) The type of compression used on the contents (null or gzip). Compression cannot be used with S3.
 
-* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is sha512.
+* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is either sha512 or sha256. If compression is specified, the hash describes the decompressed file.
 
 ## Attributes Reference
 

@@ -54,7 +54,7 @@ The `merge` and `replace` blocks support:
 
 * `compression` - (Optional) The type of compression used on the config (null or gzip). Compression cannot be used with S3.
 
-* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is sha512.
+* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is either sha512 or sha256. If compression is specified, the hash describes the decompressed config.
 
 * `http_headers` - (Optional) A list of HTTP headers to be added to the request.
 
