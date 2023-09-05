@@ -46,16 +46,28 @@ func TestIgnitionFile(t *testing.T) {
 			overwrite = true
 		}
 
+		data "ignition_file" "baz" {
+			path = "/baz"
+			source {
+				source = "baz"
+				http_headers {
+					name = "Authorization"
+					value = "Basic token"
+				}
+			}
+		}
+
 		data "ignition_config" "test" {
 			files = [
 				data.ignition_file.foo.rendered,
 				data.ignition_file.qux.rendered,
 				data.ignition_file.nop.rendered,
 				data.ignition_file.bar.rendered,
+				data.ignition_file.baz.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
-		if len(c.Storage.Files) != 4 {
+		if len(c.Storage.Files) != 5 {
 			return fmt.Errorf("arrays, found %d", len(c.Storage.Files))
 		}
 
@@ -137,6 +149,27 @@ func TestIgnitionFile(t *testing.T) {
 
 		if string(*f.Contents.Source) != "bar" {
 			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
+		}
+
+		f = c.Storage.Files[4]
+		if f.Path != "/baz" {
+			return fmt.Errorf("path, found %q", f.Path)
+		}
+
+		if *f.Contents.Source != "baz" {
+			return fmt.Errorf("contents.source, found %q", *f.Contents.Source)
+		}
+
+		if len(f.Contents.HTTPHeaders) != 1 {
+			return fmt.Errorf("contents.httpheaders, found %d", len(f.Contents.HTTPHeaders))
+		}
+		hds := f.Contents.HTTPHeaders
+		if string(hds[0].Name) != "Authorization" {
+			return fmt.Errorf("contents.httpheaders[0].name, found %q", hds[0].Name)
+		}
+
+		if string(*hds[0].Value) != "Basic token" {
+			return fmt.Errorf("contents.httpheaders[0].value, found %q", *hds[0].Value)
 		}
 
 		return nil

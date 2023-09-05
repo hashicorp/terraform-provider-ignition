@@ -53,25 +53,7 @@ func dataSourceFile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 				MaxItems: 1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"source": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"compression": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"verification": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-					},
-				},
+				Elem:     configReferenceResource,
 			},
 			"mode": {
 				Type:     schema.TypeInt,
@@ -144,9 +126,16 @@ func buildFile(d *schema.ResourceData) (string, error) {
 		if compression != "" {
 			contents.Compression = &compression
 		}
-		h := d.Get("source.0.verification").(string)
-		if h != "" {
-			contents.Verification.Hash = &h
+		v := d.Get("source.0.verification").(string)
+		if v != "" {
+			contents.Verification.Hash = &v
+		}
+		for _, hh := range d.Get("source.0.http_headers").([]interface{}) {
+			h, err := buildConfigHTTPHeaderReference(hh.(map[string]interface{}))
+			if err != nil {
+				return "", err
+			}
+			contents.HTTPHeaders = append(contents.HTTPHeaders, h)
 		}
 	}
 

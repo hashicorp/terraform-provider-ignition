@@ -70,6 +70,14 @@ The `source` block supports:
 
 * `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is either sha512 or sha256. If compression is specified, the hash describes the decompressed file.
 
+* `http_headers` - (Optional) A list of HTTP headers to be added to the request.
+
+The `http_headers` blocks support:
+
+* `name` - (Required) The header name.
+
+* `value` - (Required) The header contents.
+
 ## Attributes Reference
 
 The following attributes are exported:
