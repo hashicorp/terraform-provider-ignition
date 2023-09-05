@@ -1,5 +1,7 @@
 module github.com/community-terraform-providers/terraform-provider-ignition/v2
 
+go 1.20
+
 require (
 	github.com/coreos/ignition/v2 v2.16.2
 	github.com/coreos/vcontext v0.0.0-20230530201827-5a3e46ba99f8
@@ -99,5 +101,3 @@ require (
 	google.golang.org/grpc v1.56.1 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
-
-go 1.18
