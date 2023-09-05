@@ -44,11 +44,13 @@ The following arguments are supported:
 
 * `kernel_arguments` - (Optional) A string that describes the desired kernel arguments.
 
+* `tls_ca` - (Optional) The list of additional certificate authorities to be used for TLS verification when fetching over https.
+
 * `merge` - (Optional) A list of the configs to be merged to the current config.
 
 * `replace` - (Optional) A block with config that will replace the current.
 
-The `merge` and `replace` blocks support:
+The `tls_ca`, `merge` and `replace` blocks support:
 
 * `source` - (Required) The URL of the config. Supported schemes are http, https, tftp, s3, and data. When using http, it is advisable to use the verification option to ensure the contents haven't been modified.
 

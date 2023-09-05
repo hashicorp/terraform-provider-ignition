@@ -102,9 +102,11 @@ func dataSourceConfig() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"kernel_arguments": {
-				Type:     schema.TypeString,
+			"tls_ca": {
+				Type:     schema.TypeList,
+				ForceNew: true,
 				Optional: true,
+				Elem:     configReferenceResource,
 			},
 			"replace": {
 				Type:     schema.TypeList,
@@ -118,6 +120,10 @@ func dataSourceConfig() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 				Elem:     configReferenceResource,
+			},
+			"kernel_arguments": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"rendered": {
 				Type:     schema.TypeString,
@@ -224,6 +230,18 @@ func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
 			}
 
 			i.Config.Merge = append(i.Config.Merge, *r)
+		}
+	}
+
+	tca := d.Get("tls_ca").([]interface{})
+	if len(tca) != 0 {
+		for _, ca := range tca {
+			r, err := buildConfigReference(ca.(map[string]interface{}))
+			if err != nil {
+				return i, err
+			}
+
+			i.Security.TLS.CertificateAuthorities = append(i.Security.TLS.CertificateAuthorities, *r)
 		}
 	}
 
@@ -360,6 +378,7 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 	return storage, nil
 
 }
+
 func buildKernelArguments(d *schema.ResourceData) (types.KernelArguments, error) {
 	kargs := types.KernelArguments{}
 

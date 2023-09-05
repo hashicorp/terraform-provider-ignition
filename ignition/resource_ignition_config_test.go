@@ -181,7 +181,7 @@ func TestIgnitionConfigReplaceWithHttpHeaders(t *testing.T) {
 		}
 
 		if len(r.HTTPHeaders) != 2 {
-			return fmt.Errorf("unable to find HTTPHeaders config, expected 2")
+			return fmt.Errorf("config.replace.http_headers, found %d", len(r.HTTPHeaders))
 		}
 
 		if string(r.HTTPHeaders[0].Name) != "Authorization" {
@@ -190,6 +190,39 @@ func TestIgnitionConfigReplaceWithHttpHeaders(t *testing.T) {
 
 		if string(*r.HTTPHeaders[1].Value) != "no-cache" {
 			return fmt.Errorf("config.replace.http_headers[1].value, found %q", *r.HTTPHeaders[1].Value)
+		}
+
+		return nil
+	})
+}
+
+func TestIgnitionConfigSecurityTLSCAs(t *testing.T) {
+	testIgnition(t, `
+	data "ignition_config" "test" {
+		replace {
+			source = "foo"
+		}
+		tls_ca {
+			source = "bar"
+		}
+		tls_ca {
+			source = "baz"
+			verification = "sha512-012345678912789abcdef"
+		}
+	}
+	`, func(c *types.Config) error {
+		cas := c.Ignition.Security.TLS.CertificateAuthorities
+		if len(cas) != 2 {
+			return fmt.Errorf("config.tls_ca, found %d", len(cas))
+		}
+		if string(*cas[0].Source) != "bar" {
+			return fmt.Errorf("config.tls_ca.source, found %q", *cas[0].Source)
+		}
+		if string(*cas[1].Source) != "baz" {
+			return fmt.Errorf("config.tls_ca.source, found %q", *cas[1].Source)
+		}
+		if cas[1].Verification.Hash == nil || *cas[1].Verification.Hash != "sha512-012345678912789abcdef" {
+			return fmt.Errorf("config.tls_ca.verification, found %q", *cas[1].Verification.Hash)
 		}
 
 		return nil
