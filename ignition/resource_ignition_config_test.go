@@ -257,6 +257,31 @@ func TestIgnitionConfigDisks(t *testing.T) {
 	})
 }
 
+func TestIgnitionConfigLuks(t *testing.T) {
+	testIgnition(t, `
+	variable "ignition_luks_renders" {
+		type = "list"
+		default = [""]
+	}
+
+	data "ignition_luks" "test" {
+		device = "/dev/sda"
+		name = "data"
+	 }
+
+	data "ignition_config" "test" {
+		luks = concat([data.ignition_luks.test.rendered],
+			var.ignition_luks_renders)
+	}
+	`, func(c *types.Config) error {
+		f := c.Storage.Luks[0]
+		if *f.Device != "/dev/sda" {
+			return fmt.Errorf("device, found %q", *f.Device)
+		}
+		return nil
+	})
+}
+
 func TestIgnitionConfigArrays(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_array_renders" {

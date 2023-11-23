@@ -16,6 +16,7 @@ func Provider() terraform.ResourceProvider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"ignition_config":           dataSourceConfig(),
 			"ignition_disk":             dataSourceDisk(),
+			"ignition_luks":             dataSourceLuks(),
 			"ignition_raid":             dataSourceRaid(),
 			"ignition_filesystem":       dataSourceFilesystem(),
 			"ignition_file":             dataSourceFile(),

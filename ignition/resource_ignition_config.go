@@ -62,6 +62,11 @@ func dataSourceConfig() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"luks": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"arrays": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -303,6 +308,20 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		}
 
 		storage.Disks = append(storage.Disks, d)
+	}
+
+	for _, luk := range d.Get("luks").([]interface{}) {
+		if luk == nil {
+			continue
+		}
+
+		d := types.Luks{}
+		err := json.Unmarshal([]byte(luk.(string)), &d)
+		if err != nil {
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
+		}
+
+		storage.Luks = append(storage.Luks, d)
 	}
 
 	for _, array := range d.Get("arrays").([]interface{}) {

@@ -118,24 +118,8 @@ func buildFile(d *schema.ResourceData) (string, error) {
 	}
 
 	if hasSource {
-		src := d.Get("source.0.source").(string)
-		if src != "" {
-			contents.Source = &src
-		}
-		compression := d.Get("source.0.compression").(string)
-		if compression != "" {
-			contents.Compression = &compression
-		}
-		v := d.Get("source.0.verification").(string)
-		if v != "" {
-			contents.Verification.Hash = &v
-		}
-		for _, hh := range d.Get("source.0.http_headers").([]interface{}) {
-			h, err := buildConfigHTTPHeaderReference(hh.(map[string]interface{}))
-			if err != nil {
-				return "", err
-			}
-			contents.HTTPHeaders = append(contents.HTTPHeaders, h)
+		if err := fillResource(d, &contents, "source"); err != nil {
+			return "", err
 		}
 	}
 
@@ -178,6 +162,29 @@ func buildFile(d *schema.ResourceData) (string, error) {
 	}
 
 	return hash(string(b)), nil
+}
+
+func fillResource(d *schema.ResourceData, contents *types.Resource, name string) error {
+	src := d.Get(name + ".0.source").(string)
+	if src != "" {
+		contents.Source = &src
+	}
+	compression := d.Get(name + ".0.compression").(string)
+	if compression != "" {
+		contents.Compression = &compression
+	}
+	v := d.Get(name + ".0.verification").(string)
+	if v != "" {
+		contents.Verification.Hash = &v
+	}
+	for _, hh := range d.Get(name + ".0.http_headers").([]interface{}) {
+		h, err := buildConfigHTTPHeaderReference(hh.(map[string]interface{}))
+		if err != nil {
+			return err
+		}
+		contents.HTTPHeaders = append(contents.HTTPHeaders, h)
+	}
+	return nil
 }
 
 func encodeDataURL(mime, content string) string {
