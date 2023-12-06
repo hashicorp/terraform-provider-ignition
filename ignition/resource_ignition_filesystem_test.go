@@ -75,7 +75,7 @@ func TestIgnitionFilesystem(t *testing.T) {
 func TestIgnitionFilesystemInvalidPath(t *testing.T) {
 	testIgnitionError(t, `
 		variable "ignition_filesystem_renders" {
-			type = "list"
+			type = list
 			default = [""]
 		}
 

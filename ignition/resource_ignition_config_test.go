@@ -232,7 +232,7 @@ func TestIgnitionConfigSecurityTLSCAs(t *testing.T) {
 func TestIgnitionConfigDisks(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_disk_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -260,7 +260,7 @@ func TestIgnitionConfigDisks(t *testing.T) {
 func TestIgnitionConfigLuks(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_luks_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -285,7 +285,7 @@ func TestIgnitionConfigLuks(t *testing.T) {
 func TestIgnitionConfigArrays(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_array_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -314,7 +314,7 @@ func TestIgnitionConfigArrays(t *testing.T) {
 func TestIgnitionConfigFilesystems(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_filesystem_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -342,7 +342,7 @@ func TestIgnitionConfigFilesystems(t *testing.T) {
 func TestIgnitionConfigFiles(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_file_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -371,7 +371,7 @@ func TestIgnitionConfigFiles(t *testing.T) {
 func TestIgnitionConfigSystemd(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_systemd_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -398,7 +398,7 @@ func TestIgnitionConfigSystemd(t *testing.T) {
 func TestIgnitionConfigUsers(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_user_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
@@ -426,7 +426,7 @@ func TestIgnitionConfigUsers(t *testing.T) {
 func TestIgnitionConfigGroups(t *testing.T) {
 	testIgnition(t, `
 	variable "ignition_group_renders" {
-		type = "list"
+		type = list
 		default = [""]
 	}
 
