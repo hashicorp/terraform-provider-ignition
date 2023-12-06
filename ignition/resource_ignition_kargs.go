@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/coreos/ignition/v2/config/v3_4/types"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceKargs() *schema.Resource {

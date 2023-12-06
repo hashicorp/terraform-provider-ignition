@@ -2,9 +2,10 @@ package ignition
 
 import (
 	"encoding/json"
+
 	"github.com/coreos/ignition/v2/config/v3_4/types"
 	vcontext_path "github.com/coreos/vcontext/path"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceLuks() *schema.Resource {
