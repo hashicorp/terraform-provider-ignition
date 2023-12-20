@@ -16,7 +16,7 @@ Use the navigation to the left to read about the available resources.
 
 ## Ignition versions
 
-The current Ignition Config Spec version supported by this provider is `3.3.0`. For older versions you should use previous [releases](https://github.com/community-terraform-providers/terraform-provider-ignition/releases) of this provider:
+The current Ignition Config Spec version supported by this provider is `3.4.0`. For older versions you should use previous [releases](https://github.com/community-terraform-providers/terraform-provider-ignition/releases) of this provider:
 
 * terraform-provider-ignition `[1.0.0,2.0.0)` - Ignition `0.34.0` / Config Spec Version `2.1.0`
 * terraform-provider-ignition `>=2.0.0` - Ignition `2.1.1` / Config Spec Version `3.0.0`
@@ -24,6 +24,7 @@ The current Ignition Config Spec version supported by this provider is `3.3.0`. 
 * terraform-provider-ignition `>=2.1.4` - Ignition `2.11.0` / Config Spec Version `3.3.0`
 * terraform-provider-ignition `>=2.1.6` - Ignition `2.14.0` / Config Spec Version `3.3.0`
 * terraform-provider-ignition `>=2.2.0` - Ignition `2.16.2` / Config Spec Version `3.4.0`
+* terraform-provider-ignition `>=2.3.1` - Ignition `2.17.0` / Config Spec Version `3.4.0`
 
 ## Example Usage
 
