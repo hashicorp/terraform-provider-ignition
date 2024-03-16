@@ -41,9 +41,6 @@ func methodFamily(m string) string {
 	if i := strings.Index(m, "/"); i >= 0 {
 		m = m[:i] // remove everything from second slash
 	}
-	if i := strings.LastIndex(m, "."); i >= 0 {
-		m = m[i+1:] // cut down to last dotted component
-	}
 	return m
 }
 
@@ -100,8 +97,8 @@ func truncate(x string, l int) string {
 
 // payload represents an RPC request or response payload.
 type payload struct {
-	sent bool        // whether this is an outgoing payload
-	msg  interface{} // e.g. a proto.Message
+	sent bool // whether this is an outgoing payload
+	msg  any  // e.g. a proto.Message
 	// TODO(dsymonds): add stringifying info to codec, and limit how much we hold here?
 }
 
@@ -114,7 +111,7 @@ func (p payload) String() string {
 
 type fmtStringer struct {
 	format string
-	a      []interface{}
+	a      []any
 }
 
 func (f *fmtStringer) String() string {

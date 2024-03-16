@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
 )
 
 func TestIgnitionDisk(t *testing.T) {
@@ -14,16 +14,14 @@ func TestIgnitionDisk(t *testing.T) {
 			device = "/foo"
 			partition {
 				label = "qux"
-				size = 42
-				start = 2048
+				sizemib = 42
+				startmib = 2048
 				type_guid = "01234567-89AB-CDEF-EDCB-A98765432101"
 			}
 		}
 
 		data "ignition_config" "test" {
-			disks = [
-				"${data.ignition_disk.foo.rendered}",
-			]
+			disks = [data.ignition_disk.foo.rendered]
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Disks) != 1 {
@@ -36,24 +34,24 @@ func TestIgnitionDisk(t *testing.T) {
 		}
 
 		if len(d.Partitions) != 1 {
-			return fmt.Errorf("parition, found %d", len(d.Partitions))
+			return fmt.Errorf("partition, found %d", len(d.Partitions))
 		}
 
 		p := d.Partitions[0]
-		if p.Label != "qux" {
-			return fmt.Errorf("parition.0.label, found %q", p.Label)
+		if string(*p.Label) != "qux" {
+			return fmt.Errorf("partition.0.label, found %q", *p.Label)
 		}
 
-		if p.Size != 42 {
-			return fmt.Errorf("parition.0.size, found %q", p.Size)
+		if int(*p.SizeMiB) != 42 {
+			return fmt.Errorf("partition.0.sizemib, found %q", *p.SizeMiB)
 		}
 
-		if p.Start != 2048 {
-			return fmt.Errorf("parition.0.start, found %q", p.Start)
+		if int(*p.StartMiB) != 2048 {
+			return fmt.Errorf("partition.0.start, found %q", *p.StartMiB)
 		}
 
-		if p.TypeGUID != "01234567-89AB-CDEF-EDCB-A98765432101" {
-			return fmt.Errorf("parition.0.type_guid, found %q", p.TypeGUID)
+		if string(*p.TypeGUID) != "01234567-89AB-CDEF-EDCB-A98765432101" {
+			return fmt.Errorf("partition.0.type_guid, found %q", *p.TypeGUID)
 		}
 
 		return nil
@@ -67,9 +65,7 @@ func TestIgnitionDiskInvalidDevice(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			disks = [
-				"${data.ignition_disk.foo.rendered}",
-			]
+			disks = [data.ignition_disk.foo.rendered]
 		}
 	`, regexp.MustCompile("path not absolute"))
 }
@@ -80,22 +76,20 @@ func TestIgnitionDiskInvalidPartition(t *testing.T) {
 			device = "/foo"
 			partition {
 				label = "qux"
-				size = 42
-				start = 2048
+				sizemib = 42
+				startmib = 2048
 				type_guid =  "01234567-89AB-CDEF-EDCB-A98765432101"
 			}
 			partition {
 				label = "bar"
-				size = 42
-				start = 2048
+				sizemib = 42
+				startmib = 2048
 				type_guid =  "01234567-89AB-CDEF-EDCB-A98765432101"
 			}
 		}
 
 		data "ignition_config" "test" {
-			disks = [
-				"${data.ignition_disk.foo.rendered}",
-			]
+			disks = [data.ignition_disk.foo.rendered]
 		}
 	`, regexp.MustCompile("overlap"))
 }

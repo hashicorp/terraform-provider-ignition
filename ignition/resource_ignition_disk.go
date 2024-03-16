@@ -3,8 +3,9 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
+	"github.com/coreos/vcontext/path"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceDisk() *schema.Resource {
@@ -38,12 +39,12 @@ func dataSourceDisk() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
-						"size": {
+						"sizemib": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							ForceNew: true,
 						},
-						"start": {
+						"startmib": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							ForceNew: true,
@@ -85,40 +86,38 @@ func resourceDiskExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 
 func buildDisk(d *schema.ResourceData) (string, error) {
 	disk := &types.Disk{
-		Device:    d.Get("device").(string),
-		WipeTable: d.Get("wipe_table").(bool),
+		Device: d.Get("device").(string),
 	}
-
-	if err := handleReport(disk.ValidateDevice()); err != nil {
-		return "", err
+	wipe, hasWipeTable := d.GetOk("wipe_table")
+	if hasWipeTable {
+		bwipe := wipe.(bool)
+		disk.WipeTable = &bwipe
 	}
 
 	for _, raw := range d.Get("partition").([]interface{}) {
 		v := raw.(map[string]interface{})
 		p := types.Partition{
-			Label:    v["label"].(string),
-			Number:   v["number"].(int),
-			Size:     v["size"].(int),
-			Start:    v["start"].(int),
-			TypeGUID: v["type_guid"].(string),
+			Number: v["number"].(int),
 		}
-
-		if err := handleReport(p.ValidateLabel()); err != nil {
-			return "", err
+		tlabel := v["label"].(string)
+		if tlabel != "" {
+			p.Label = &tlabel
 		}
-
-		if err := handleReport(p.ValidateGUID()); err != nil {
-			return "", err
+		tsize := v["sizemib"].(int)
+		if tsize != 0 {
+			p.SizeMiB = &tsize
 		}
-
-		if err := handleReport(p.ValidateTypeGUID()); err != nil {
-			return "", err
+		tstart := v["startmib"].(int)
+		if tstart != 0 {
+			p.StartMiB = &tstart
 		}
+		tguid := v["type_guid"].(string)
+		p.TypeGUID = &tguid
 
 		disk.Partitions = append(disk.Partitions, p)
 	}
 
-	if err := handleReport(disk.ValidatePartitions()); err != nil {
+	if err := handleReport(disk.Validate(path.ContextPath{})); err != nil {
 		return "", err
 	}
 
@@ -126,7 +125,10 @@ func buildDisk(d *schema.ResourceData) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	d.Set("rendered", string(b))
+	err = d.Set("rendered", string(b))
+	if err != nil {
+		return "", err
+	}
 
 	return hash(string(b)), nil
 }

@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/coreos/ignition/config/v2_1/types"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
+	"github.com/coreos/vcontext/path"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceFile() *schema.Resource {
@@ -14,15 +15,16 @@ func dataSourceFile() *schema.Resource {
 		Exists: resourceFileExists,
 		Read:   resourceFileRead,
 		Schema: map[string]*schema.Schema{
-			"filesystem": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
 			"path": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
+			},
+			"overwrite": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Default:  false,
 			},
 			"content": {
 				Type:     schema.TypeList,
@@ -51,25 +53,7 @@ func dataSourceFile() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 				MaxItems: 1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"source": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"compression": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-						"verification": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ForceNew: true,
-						},
-					},
-				},
+				Elem:     configReferenceResource,
 			},
 			"mode": {
 				Type:     schema.TypeInt,
@@ -124,39 +108,34 @@ func buildFile(d *schema.ResourceData) (string, error) {
 		return "", fmt.Errorf("content or source options must be present")
 	}
 
-	var contents types.FileContents
+	var contents types.Resource
 	if hasContent {
-		contents.Source = encodeDataURL(
+		s := encodeDataURL(
 			d.Get("content.0.mime").(string),
 			d.Get("content.0.content").(string),
 		)
+		contents.Source = &s
 	}
 
 	if hasSource {
-		contents.Source = d.Get("source.0.source").(string)
-		contents.Compression = d.Get("source.0.compression").(string)
-		h := d.Get("source.0.verification").(string)
-		if h != "" {
-			contents.Verification.Hash = &h
+		if err := fillResource(d, &contents, "source"); err != nil {
+			return "", err
 		}
 	}
 
 	file := &types.File{}
-	file.Filesystem = d.Get("filesystem").(string)
-	if err := handleReport(file.ValidateFilesystem()); err != nil {
-		return "", err
-	}
 
 	file.Path = d.Get("path").(string)
-	if err := handleReport(file.ValidatePath()); err != nil {
-		return "", err
-	}
+
+	overwrite := d.Get("overwrite").(bool)
+	file.Overwrite = &overwrite
 
 	file.Contents = contents
 
-	file.Mode = d.Get("mode").(int)
-	if err := handleReport(file.ValidateMode()); err != nil {
-		return "", err
+	mode, hasMode := d.GetOk("mode")
+	if hasMode {
+		imode := mode.(int)
+		file.Mode = &imode
 	}
 
 	uid := d.Get("uid").(int)
@@ -169,13 +148,43 @@ func buildFile(d *schema.ResourceData) (string, error) {
 		file.Group = types.NodeGroup{ID: &gid}
 	}
 
+	if err := handleReport(file.Validate(path.ContextPath{})); err != nil {
+		return "", err
+	}
+
 	b, err := json.Marshal(file)
 	if err != nil {
 		return "", err
 	}
-	d.Set("rendered", string(b))
+	err = d.Set("rendered", string(b))
+	if err != nil {
+		return "", err
+	}
 
 	return hash(string(b)), nil
+}
+
+func fillResource(d *schema.ResourceData, contents *types.Resource, name string) error {
+	src := d.Get(name + ".0.source").(string)
+	if src != "" {
+		contents.Source = &src
+	}
+	compression := d.Get(name + ".0.compression").(string)
+	if compression != "" {
+		contents.Compression = &compression
+	}
+	v := d.Get(name + ".0.verification").(string)
+	if v != "" {
+		contents.Verification.Hash = &v
+	}
+	for _, hh := range d.Get(name + ".0.http_headers").([]interface{}) {
+		h, err := buildConfigHTTPHeaderReference(hh.(map[string]interface{}))
+		if err != nil {
+			return err
+		}
+		contents.HTTPHeaders = append(contents.HTTPHeaders, h)
+	}
+	return nil
 }
 
 func encodeDataURL(mime, content string) string {

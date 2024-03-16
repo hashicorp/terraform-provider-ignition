@@ -1,12 +1,6 @@
 Terraform Provider
 ==================
 
-- Website: https://www.terraform.io
-- [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
-- Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
-
-<img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="600px">
-
 Requirements
 ------------
 
@@ -16,22 +10,18 @@ Requirements
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-ignition`
+Clone repository to: `$GOPATH/src/github.com/community-terraform-providers/terraform-provider-ignition`
 
 ```sh
-$ git clone git@github.com:terraform-providers/terraform-provider-ignition $GOPATH/src/github.com/terraform-providers/terraform-provider-ignition
+$ git clone git@github.com:community-terraform-providers/terraform-provider-ignition $GOPATH/src/github.com/community-terraform-providers/terraform-provider-ignition
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ignition
+$ cd $GOPATH/src/github.com/community-terraform-providers/terraform-provider-ignition
 $ make build
 ```
-
-Using the provider
-----------------------
-## Fill in for each provider
 
 Developing the Provider
 ---------------------------

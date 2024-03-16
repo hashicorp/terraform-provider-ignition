@@ -14,9 +14,9 @@ Renders an ignition configuration as JSON. It  contains all the disks, partition
 
 ```hcl
 data "ignition_config" "example" {
-	systemd = [
-		data.ignition_systemd_unit.example.rendered,
-	]
+  systemd = [
+    data.ignition_systemd_unit.example.rendered,
+  ]
 }
 ```
 
@@ -38,22 +38,34 @@ The following arguments are supported:
 
 * `systemd` - (Optional) The list of systemd units. Describes the desired state of the systemd units.
 
-* `networkd` - (Optional) The list of networkd units. Describes the desired state of the networkd files.
-
 * `users` - (Optional) The list of accounts to be added.
 
 * `groups` - (Optional) The list of groups to be added.
 
-* `append` - (Optional) Any number of blocks with the configs to be appended to the current config.
+* `kernel_arguments` - (Optional) A string that describes the desired kernel arguments.
+
+* `tls_ca` - (Optional) The list of additional certificate authorities to be used for TLS verification when fetching over https.
+
+* `merge` - (Optional) A list of the configs to be merged to the current config.
 
 * `replace` - (Optional) A block with config that will replace the current.
 
-
-The `append` and `replace` blocks supports:
+The `tls_ca`, `merge` and `replace` blocks support:
 
 * `source` - (Required) The URL of the config. Supported schemes are http, https, tftp, s3, and data. When using http, it is advisable to use the verification option to ensure the contents haven't been modified.
 
-* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is sha512.
+* `compression` - (Optional) The type of compression used on the config (null or gzip). Compression cannot be used with S3.
+
+* `verification` - (Optional) The hash of the config, in the form _\<type\>-\<value\>_ where type is either sha512 or sha256. If compression is specified, the hash describes the decompressed config.
+
+* `http_headers` - (Optional) A list of HTTP headers to be added to the request.
+
+The `http_headers` blocks support:
+
+* `name` - (Required) The header name.
+
+* `value` - (Required) The header contents.
+
 
 ## Attributes Reference
 

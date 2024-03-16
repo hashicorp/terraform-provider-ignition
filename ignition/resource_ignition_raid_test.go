@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
 )
 
 func TestIgnitionRaid(t *testing.T) {
@@ -18,9 +18,7 @@ func TestIgnitionRaid(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			arrays = [
-				"${data.ignition_raid.foo.rendered}",
-			]
+			arrays = [data.ignition_raid.foo.rendered]
 		}
 	`, func(c *types.Config) error {
 		if len(c.Storage.Raid) != 1 {
@@ -36,12 +34,12 @@ func TestIgnitionRaid(t *testing.T) {
 			return fmt.Errorf("devices, found %v", a.Devices)
 		}
 
-		if a.Level != "raid10" {
-			return fmt.Errorf("level, found %q", a.Level)
+		if *a.Level != "raid10" {
+			return fmt.Errorf("level, found %q", *a.Level)
 		}
 
-		if a.Spares != 42 {
-			return fmt.Errorf("spares, found %q", a.Spares)
+		if *a.Spares != 42 {
+			return fmt.Errorf("spares, found %q", *a.Spares)
 		}
 
 		return nil
@@ -58,26 +56,7 @@ func TestIgnitionRaidInvalidLevel(t *testing.T) {
 		}
 
 		data "ignition_config" "test" {
-			arrays = [
-				"${data.ignition_raid.foo.rendered}",
-			]
+			arrays = [data.ignition_raid.foo.rendered]
 		}
 	`, regexp.MustCompile("raid level"))
-}
-
-func TestIgnitionRaidInvalidDevices(t *testing.T) {
-	testIgnitionError(t, `
-		data "ignition_raid" "foo" {
-			name = "foo"
-			level = "raid10"
-			devices = ["foo"]
-			spares = 42
-		}
-
-		data "ignition_config" "test" {
-			arrays = [
-				"${data.ignition_raid.foo.rendered}",
-			]
-		}
-	`, regexp.MustCompile("absolute"))
 }

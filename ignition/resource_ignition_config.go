@@ -5,10 +5,26 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
+	"github.com/coreos/ignition/v2/config/validate"
 )
+
+var httpHeaderReferenceResource = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"name": {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Required: true,
+		},
+		"value": {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Required: true,
+		},
+	},
+}
 
 var configReferenceResource = &schema.Resource{
 	Schema: map[string]*schema.Schema{
@@ -17,10 +33,21 @@ var configReferenceResource = &schema.Resource{
 			ForceNew: true,
 			Required: true,
 		},
+		"compression": {
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Optional: true,
+		},
 		"verification": {
 			Type:     schema.TypeString,
 			ForceNew: true,
 			Optional: true,
+		},
+		"http_headers": {
+			Type:     schema.TypeList,
+			ForceNew: true,
+			Optional: true,
+			Elem:     httpHeaderReferenceResource,
 		},
 	},
 }
@@ -31,6 +58,11 @@ func dataSourceConfig() *schema.Resource {
 		Read:   resourceIgnitionFileRead,
 		Schema: map[string]*schema.Schema{
 			"disks": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"luks": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -65,11 +97,6 @@ func dataSourceConfig() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"networkd": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
 			"users": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -80,6 +107,12 @@ func dataSourceConfig() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"tls_ca": {
+				Type:     schema.TypeList,
+				ForceNew: true,
+				Optional: true,
+				Elem:     configReferenceResource,
+			},
 			"replace": {
 				Type:     schema.TypeList,
 				ForceNew: true,
@@ -87,11 +120,15 @@ func dataSourceConfig() *schema.Resource {
 				MaxItems: 1,
 				Elem:     configReferenceResource,
 			},
-			"append": {
+			"merge": {
 				Type:     schema.TypeList,
 				ForceNew: true,
 				Optional: true,
 				Elem:     configReferenceResource,
+			},
+			"kernel_arguments": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"rendered": {
 				Type:     schema.TypeString,
@@ -157,34 +194,39 @@ func buildConfig(d *schema.ResourceData) (*types.Config, error) {
 		return nil, err
 	}
 
-	config.Networkd, err = buildNetworkd(d)
-	if err != nil {
-		return nil, err
-	}
-
 	config.Passwd, err = buildPasswd(d)
 	if err != nil {
 		return nil, err
 	}
 
-	return config, handleReport(config.Validate())
+	config.KernelArguments, err = buildKernelArguments(d)
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := json.Marshal(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, handleReport(validate.ValidateWithContext(new(*types.Config), b))
 }
 
 func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
-	var err error
-
 	i := types.Ignition{}
 	i.Version = types.MaxVersion.String()
 
 	rr := d.Get("replace.0").(map[string]interface{})
 	if len(rr) != 0 {
-		i.Config.Replace, err = buildConfigReference(rr)
+		r, err := buildConfigReference(rr)
 		if err != nil {
 			return i, err
 		}
+
+		i.Config.Replace = *r
 	}
 
-	ar := d.Get("append").([]interface{})
+	ar := d.Get("merge").([]interface{})
 	if len(ar) != 0 {
 		for _, rr := range ar {
 			r, err := buildConfigReference(rr.(map[string]interface{}))
@@ -192,23 +234,63 @@ func buildIgnition(d *schema.ResourceData) (types.Ignition, error) {
 				return i, err
 			}
 
-			i.Config.Append = append(i.Config.Append, *r)
+			i.Config.Merge = append(i.Config.Merge, *r)
+		}
+	}
+
+	tca := d.Get("tls_ca").([]interface{})
+	if len(tca) != 0 {
+		for _, ca := range tca {
+			r, err := buildConfigReference(ca.(map[string]interface{}))
+			if err != nil {
+				return i, err
+			}
+
+			i.Security.TLS.CertificateAuthorities = append(i.Security.TLS.CertificateAuthorities, *r)
 		}
 	}
 
 	return i, nil
 }
 
-func buildConfigReference(raw map[string]interface{}) (*types.ConfigReference, error) {
-	r := &types.ConfigReference{}
-	r.Source = raw["source"].(string)
-
+func buildConfigReference(raw map[string]interface{}) (*types.Resource, error) {
+	r := &types.Resource{}
+	source := raw["source"].(string)
+	if source != "" {
+		r.Source = &source
+	}
 	hash := raw["verification"].(string)
 	if hash != "" {
 		r.Verification.Hash = &hash
 	}
+	compression := raw["compression"].(string)
+	if compression != "" {
+		r.Compression = &compression
+	}
+
+	for _, hh := range raw["http_headers"].([]interface{}) {
+		h, err := buildConfigHTTPHeaderReference(hh.(map[string]interface{}))
+		if err != nil {
+			return r, err
+		}
+		r.HTTPHeaders = append(r.HTTPHeaders, h)
+	}
 
 	return r, nil
+}
+
+func buildConfigHTTPHeaderReference(raw map[string]interface{}) (types.HTTPHeader, error) {
+	h := types.HTTPHeader{}
+	name := raw["name"].(string)
+	if name != "" {
+		h.Name = name
+	}
+	value := raw["value"].(string)
+	if value != "" {
+		h.Value = &value
+	}
+
+	return h, nil
 }
 
 func buildStorage(d *schema.ResourceData) (types.Storage, error) {
@@ -226,6 +308,20 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 		}
 
 		storage.Disks = append(storage.Disks, d)
+	}
+
+	for _, luk := range d.Get("luks").([]interface{}) {
+		if luk == nil {
+			continue
+		}
+
+		d := types.Luks{}
+		err := json.Unmarshal([]byte(luk.(string)), &d)
+		if err != nil {
+			return storage, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
+		}
+
+		storage.Luks = append(storage.Luks, d)
 	}
 
 	for _, array := range d.Get("arrays").([]interface{}) {
@@ -302,6 +398,22 @@ func buildStorage(d *schema.ResourceData) (types.Storage, error) {
 
 }
 
+func buildKernelArguments(d *schema.ResourceData) (types.KernelArguments, error) {
+	kargs := types.KernelArguments{}
+
+	k := d.Get("kernel_arguments").(string)
+	if k == "" {
+		return kargs, nil
+	}
+
+	err := json.Unmarshal([]byte(k), &kargs)
+	if err != nil {
+		return kargs, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
+	}
+
+	return kargs, nil
+}
+
 func buildSystemd(d *schema.ResourceData) (types.Systemd, error) {
 	systemd := types.Systemd{}
 
@@ -321,26 +433,6 @@ func buildSystemd(d *schema.ResourceData) (types.Systemd, error) {
 
 	return systemd, nil
 
-}
-
-func buildNetworkd(d *schema.ResourceData) (types.Networkd, error) {
-	networkd := types.Networkd{}
-
-	for _, unit := range d.Get("networkd").([]interface{}) {
-		if unit == nil {
-			continue
-		}
-
-		u := types.Networkdunit{}
-		err := json.Unmarshal([]byte(unit.(string)), &u)
-		if err != nil {
-			return networkd, errors.Wrap(err, "No valid JSON found, make sure you're using .rendered and not .id")
-		}
-
-		networkd.Units = append(networkd.Units, u)
-	}
-
-	return networkd, nil
 }
 
 func buildPasswd(d *schema.ResourceData) (types.Passwd, error) {

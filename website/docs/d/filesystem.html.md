@@ -14,28 +14,15 @@ Describes the desired state of a the system’s filesystems to be configured and
 
 ```hcl
 data "ignition_filesystem" "foo" {
-	name = "root"
-	mount {
-		device = "/dev/disk/by-label/ROOT"
-		format = "xfs"
-		create = true
-		options = ["-L", "ROOT"]
-	}
+    device = "/dev/disk/by-label/ROOT"
+    format = "xfs"
+    options = ["-L", "ROOT"]
 }
 ```
 
 ## Argument Reference
 
 The following arguments are supported:
-
-* `name` - (Optional) The identifier for the filesystem, internal to Ignition. This is only required if the filesystem needs to be referenced in the a _ignition\_files_ resource.
-
-* `mount` - (Optional) Contains the set of mount and formatting options for the filesystem. A non-null entry indicates that the filesystem should be mounted before it is used by Ignition.
-
-* `path` - (Optional) The mount-point of the filesystem. A non-null entry indicates that the filesystem has already been mounted by the system at the specified path. This is really only useful for _/sysroot_.
-
-
-The `mount` block supports:
 
 * `device` - (Required) The absolute path to the device. Devices are typically referenced by the _/dev/disk/by-*_ symlinks.
 
@@ -48,6 +35,8 @@ The `mount` block supports:
 * `uuid` - (Optional) The uuid of the filesystem.
 
 * `options` - (Optional) Any additional options to be passed to the format-specific mkfs utility.
+
+* `path` - (Optional) The mount-point of the filesystem while Ignition is running relative to where the root filesystem will be mounted. This is not necessarily the same as where it should be mounted in the real root, but it is encouraged to make it the same.
 
 ## Attributes Reference
 

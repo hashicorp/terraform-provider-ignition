@@ -1,0 +1,38 @@
+name: Go
+
+on:
+  push:
+    branches: [v2]
+  pull_request:
+    branches: [v2]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --timeout=10m
+
+      - name: Run go Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v `go list ./...`

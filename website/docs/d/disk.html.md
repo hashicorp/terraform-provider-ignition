@@ -16,8 +16,8 @@ Describes the desired state of a system’s disk.
 data "ignition_disk" "foo" {
 	device = "/dev/sda"
 	partition {
-		start = 2048
-		size = 196037632
+		startmib = 2048
+		sizemib = 196037632
 	}
 }
 ```
@@ -39,11 +39,9 @@ The `partition` block supports:
 
 * `number` - (Optional) The partition number, which dictates it’s position in the partition table (one-indexed). If zero, use the next available partition slot.
 
-* `size` - (Optional) The size of the partition (in sectors). If zero, the partition will fill the remainder of the disk.
+* `sizemib` - (Optional) The size of the partition (in MiB). If zero, the partition will fill the remainder of the disk.
 
-
-* `start` - (Optional) The start of the partition (in sectors). If zero, the partition will be positioned at the earliest available part of the disk.
-
+* `startmib` - (Optional) The start of the partition (in MiB). If zero, the partition will be positioned at the earliest available part of the disk.
 
 * `type_guid` - (Optional) The GPT [partition type GUID](http://en.wikipedia.org/wiki/GUID_Partition_Table#Partition_type_GUIDs). If omitted, the default will be _0FC63DAF-8483-4772-8E79-3D69D8477DE4_ (Linux filesystem data).
 

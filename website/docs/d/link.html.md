@@ -14,7 +14,6 @@ Describes a link to be created in a particular filesystem.
 
 ```hcl
 data "ignition_link" "symlink" {
-	filesystem = "foo"
 	path = "/symlink"
     target = "/foo"
 }
@@ -24,11 +23,11 @@ data "ignition_link" "symlink" {
 
 The following arguments are supported:
 
-* `filesystem` - (Required) The internal identifier of the filesystem. This matches the last filesystem with the given identifier. This should be a valid name from a _ignition\_filesystem_ resource.
-
 * `path` - (Required) The absolute path to the link.
 
 * `target` - (Required) The target path of the link.
+
+* `overwrite` - (Optional) Overwrite the link, if it already exists.
 
 * `hard` - (Optional) A symbolic link is created if this is false, a hard one if this is true.
 

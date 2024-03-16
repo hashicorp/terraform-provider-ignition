@@ -3,37 +3,36 @@ package ignition
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/coreos/ignition/config/validate/report"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/coreos/vcontext/report"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		DataSourcesMap: map[string]*schema.Resource{
-			"ignition_config":        dataSourceConfig(),
-			"ignition_disk":          dataSourceDisk(),
-			"ignition_raid":          dataSourceRaid(),
-			"ignition_filesystem":    dataSourceFilesystem(),
-			"ignition_file":          dataSourceFile(),
-			"ignition_directory":     dataSourceDirectory(),
-			"ignition_link":          dataSourceLink(),
-			"ignition_systemd_unit":  dataSourceSystemdUnit(),
-			"ignition_networkd_unit": dataSourceNetworkdUnit(),
-			"ignition_user":          dataSourceUser(),
-			"ignition_group":         dataSourceGroup(),
+			"ignition_config":           dataSourceConfig(),
+			"ignition_disk":             dataSourceDisk(),
+			"ignition_luks":             dataSourceLuks(),
+			"ignition_raid":             dataSourceRaid(),
+			"ignition_filesystem":       dataSourceFilesystem(),
+			"ignition_file":             dataSourceFile(),
+			"ignition_directory":        dataSourceDirectory(),
+			"ignition_link":             dataSourceLink(),
+			"ignition_systemd_unit":     dataSourceSystemdUnit(),
+			"ignition_user":             dataSourceUser(),
+			"ignition_group":            dataSourceGroup(),
+			"ignition_kernel_arguments": dataSourceKargs(),
 		},
 	}
 }
 
-func id(input interface{}) string {
-	b, _ := json.Marshal(input)
-	return hash(string(b))
-}
+// func id(input interface{}) string {
+// 	b, _ := json.Marshal(input)
+// 	return hash(string(b))
+// }
 
 func hash(s string) string {
 	sha := sha256.Sum256([]byte(s))

@@ -14,7 +14,6 @@ Describes a directory to be created in a particular filesystem.
 
 ```hcl
 data "ignition_directory" "folder" {
-	filesystem = "foo"
 	path = "/folder"
 }
 ```
@@ -23,11 +22,11 @@ data "ignition_directory" "folder" {
 
 The following arguments are supported:
 
-* `filesystem` - (Required) The internal identifier of the filesystem. This matches the last filesystem with the given identifier. This should be a valid name from a _ignition\_filesystem_ resource.
-
 * `path` - (Required) The absolute path to the directory.
 
-* `mode` - (Optional) The directory's permission mode. Note that the mode can be specified as either an octal value (e.g 0755) or a decimal value (i.e. 493 as equivalent to the octal 0755).
+* `overwrite` - (Optional) Whether to delete preexisting nodes at the path. Defaults to false.
+
+* `mode` - (Optional) The directory's permission mode. Note that the mode must be properly specified as a decimal value, not octal (i.e. 0755 -> 493).
 
 * `uid` - (Optional) The user ID of the owner.
 

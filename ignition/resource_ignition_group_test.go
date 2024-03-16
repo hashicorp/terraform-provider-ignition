@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coreos/ignition/config/v2_1/types"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
 )
 
 func TestIgnitionGroup(t *testing.T) {
@@ -21,8 +21,8 @@ func TestIgnitionGroup(t *testing.T) {
 
 		data "ignition_config" "test" {
 			groups = [
-				"${data.ignition_group.foo.rendered}",
-				"${data.ignition_group.qux.rendered}",
+				data.ignition_group.foo.rendered,
+				data.ignition_group.qux.rendered,
 			]
 		}
 	`, func(c *types.Config) error {
@@ -36,8 +36,8 @@ func TestIgnitionGroup(t *testing.T) {
 			return fmt.Errorf("name, found %q", g.Name)
 		}
 
-		if g.PasswordHash != "password" {
-			return fmt.Errorf("password_hash, found %q", g.PasswordHash)
+		if *g.PasswordHash != "password" {
+			return fmt.Errorf("password_hash, found %q", *g.PasswordHash)
 		}
 
 		if g.Gid == nil || *g.Gid != 42 {

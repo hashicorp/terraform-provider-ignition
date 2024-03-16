@@ -3,8 +3,9 @@ package ignition
 import (
 	"encoding/json"
 
-	"github.com/coreos/ignition/config/v2_1/types"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/coreos/ignition/v2/config/v3_4/types"
+	"github.com/coreos/ignition/v2/config/validate"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceUser() *schema.Resource {
@@ -108,44 +109,88 @@ func resourceUserExists(d *schema.ResourceData, meta interface{}) (bool, error) 
 
 func buildUser(d *schema.ResourceData) (string, error) {
 	user := types.PasswdUser{
-		Name:         d.Get("name").(string),
-		UID:          getInt(d, "uid"),
-		Gecos:        d.Get("gecos").(string),
-		HomeDir:      d.Get("home_dir").(string),
-		NoCreateHome: d.Get("no_create_home").(bool),
-		PrimaryGroup: d.Get("primary_group").(string),
-		Groups:       castSliceInterfaceToPasswdUserGroup(d.Get("groups").([]interface{})),
-		NoUserGroup:  d.Get("no_user_group").(bool),
-		NoLogInit:    d.Get("no_log_init").(bool),
-		Shell:        d.Get("shell").(string),
-		System:       d.Get("system").(bool),
+		Name:   d.Get("name").(string),
+		UID:    getInt(d, "uid"),
+		Groups: castSliceInterfaceToPasswdUserGroup(d.Get("groups").([]interface{})),
 		SSHAuthorizedKeys: castSliceInterfaceToSSHAuthorizedKey(
 			d.Get("ssh_authorized_keys").([]interface{}),
 		),
 	}
 
-	pwd := d.Get("password_hash").(string)
-	if pwd != "" {
-		user.PasswordHash = &pwd
+	passhash, hasPasshash := d.GetOk("password_hash")
+	if hasPasshash {
+		strPasshash := passhash.(string)
+		user.PasswordHash = &strPasshash
+	}
+
+	gecos, hasGecos := d.GetOk("gecos")
+	if hasGecos {
+		strGecos := gecos.(string)
+		user.Gecos = &strGecos
+	}
+
+	homedir, hasHomedir := d.GetOk("home_dir")
+	if hasHomedir {
+		strHomedir := homedir.(string)
+		user.HomeDir = &strHomedir
+	}
+
+	primarygroup, hasPrimarygroup := d.GetOk("primary_group")
+	if hasPrimarygroup {
+		strPrimarygroup := primarygroup.(string)
+		user.PrimaryGroup = &strPrimarygroup
+	}
+
+	shell, hasShell := d.GetOk("shell")
+	if hasShell {
+		strShell := shell.(string)
+		user.Shell = &strShell
+	}
+
+	nocreatehome, hasNocreatehome := d.GetOk("no_create_home")
+	if hasNocreatehome {
+		bnocreatehome := nocreatehome.(bool)
+		user.NoCreateHome = &bnocreatehome
+	}
+
+	nousergroup, hasNousergroup := d.GetOk("no_user_group")
+	if hasNousergroup {
+		bnousergroup := nousergroup.(bool)
+		user.NoUserGroup = &bnousergroup
+	}
+
+	nologinit, hasNologinit := d.GetOk("no_log_init")
+	if hasNologinit {
+		bnologinit := nologinit.(bool)
+		user.NoLogInit = &bnologinit
+	}
+
+	system, hasSystem := d.GetOk("system")
+	if hasSystem {
+		bsystem := system.(bool)
+		user.System = &bsystem
 	}
 
 	b, err := json.Marshal(user)
 	if err != nil {
 		return "", err
 	}
-	d.Set("rendered", string(b))
+	err = d.Set("rendered", string(b))
+	if err != nil {
+		return "", err
+	}
 
-	return hash(string(b)), handleReport(user.Validate())
+	return hash(string(b)), handleReport(validate.ValidateWithContext(new(*types.PasswdUser), b))
 }
 
-func castSliceInterfaceToPasswdUserGroup(i []interface{}) []types.PasswdUserGroup {
-	var res []types.PasswdUserGroup
+func castSliceInterfaceToPasswdUserGroup(i []interface{}) []types.Group {
+	var res []types.Group
 	for _, g := range i {
 		if g == nil {
 			continue
 		}
 
-		res = append(res, types.PasswdUserGroup(g.(string)))
+		res = append(res, types.Group(g.(string)))
 	}
 	return res
 }
